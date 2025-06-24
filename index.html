@@ -3,6 +3,7 @@
 <head> 
   <meta charset="utf-8"> 
   <title>Олег — Моушн дизайнер</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
   <style>
     nav {
       text-align: center;
@@ -15,20 +16,32 @@
       font-weight: bold;
       color: #333;
     }
+
+    .lottie-nav {
+      display: inline-block;
+      width: 250px;
+      height: 250px;
+      vertical-align: middle;
+    }
   </style>
 </head> 
+
 <body>
 
+  <!-- 📌 Центрированное меню с Lottie -->
   <nav>
     <a href="index.html">Главная</a>
     <a href="table.html">Таблица</a>
+    <div class="lottie-nav" id="lottie-go"></div>
     <a href="article.html">Статья</a>
     <a href="Lottie.html">Lottie</a>
   </nav>
+
   <hr>
 
+  <!-- 🧾 Основной контент -->
   <h1><b style="color: Blue">Олег</b></h1>
-  <p>Моушн дизайнер</p> 
+  <p>Моушн дизайнер</p>
   <img src="oleg.png" width="256" height="256" alt="Oleg">
   <p><a href="https://youtu.be/H_yvzxc7sK8?si=RdeJ0LFd8Pn6fvoN" target="_blank">Шоурил</a></p>
 
@@ -43,6 +56,17 @@
     <li>Stable Diffusion</li>
     <li>CasparCG</li>
   </ul>
+
+  <!-- 🎬 Скрипт Lottie: размещён в конце body -->
+  <script>
+    lottie.loadAnimation({
+      container: document.getElementById('lottie-go'),
+      renderer: 'svg',
+      loop: true,
+      autoplay: true,
+      path: 'go.json'
+    });
+  </script>
 
 </body> 
 </html>
