@@ -58,15 +58,36 @@
   </ul>
 
   <!-- 🎬 Скрипт Lottie: размещён в конце body -->
-  <script>
-    lottie.loadAnimation({
-      container: document.getElementById('lottie-go'),
-      renderer: 'svg',
-      loop: true,
-      autoplay: true,
-      path: 'go.json'
-    });
-  </script>
+ <script>
+  const goAnimation = lottie.loadAnimation({
+    container: document.getElementById('lottie-go'),
+    renderer: 'svg',
+    loop: false,
+    autoplay: false,
+    path: 'go.json'
+  });
+
+  // Установить на 0 кадр после загрузки
+  goAnimation.addEventListener('DOMLoaded', () => {
+    goAnimation.goToAndStop(0, true);
+  });
+
+  const lottieElement = document.getElementById('lottie-go');
+
+  // Наведение мышки: проиграть с 0 по 30 кадр
+  lottieElement.addEventListener('mouseenter', () => {
+    goAnimation.playSegments([0, 30], true);
+  });
+
+  // Увод мышки: проиграть с 30 по 60 кадр, затем остановиться на кадре 0
+  lottieElement.addEventListener('mouseleave', () => {
+    goAnimation.playSegments([30, 60], true);
+
+    goAnimation.addEventListener('complete', () => {
+      goAnimation.goToAndStop(0, true);
+    }, { once: true }); // слушаем только один раз, чтобы не сработало лишнего
+  });
+</script>
 
 </body> 
 </html>
