@@ -71,6 +71,7 @@
 
   // Установить начальное состояние
   goAnimation.addEventListener('DOMLoaded', () => {
+    console.log('Lottie загружена → устанавливаем кадр 0');
     goAnimation.goToAndStop(0, true);
   });
 
@@ -81,13 +82,13 @@
     if (isHovered) return;
     isHovered = true;
 
-    // Снимаем все старые обработчики 'complete'
-    goAnimation.removeEventListener('complete');
-
+    console.log('mouseenter → проигрываем 0–30');
+    goAnimation.removeEventListener('complete'); // сброс старых обработчиков
     goAnimation.playSegments([0, 30], true);
 
     const onHoverComplete = () => {
       if (isHovered) {
+        console.log('hover complete → останавливаемся на кадре 30');
         goAnimation.goToAndStop(30, true);
       }
       goAnimation.removeEventListener('complete', onHoverComplete);
@@ -100,13 +101,13 @@
   lottieElement.addEventListener('mouseleave', () => {
     isHovered = false;
 
-    // Снимаем все старые обработчики 'complete'
-    goAnimation.removeEventListener('complete');
-
+    console.log('mouseleave → проигрываем 30–60');
+    goAnimation.removeEventListener('complete'); // сброс старых обработчиков
     goAnimation.playSegments([30, 60], true);
 
     const onLeaveComplete = () => {
       if (!isHovered) {
+        console.log('leave complete → возвращаемся на кадр 0');
         goAnimation.goToAndStop(0, true);
       }
       goAnimation.removeEventListener('complete', onLeaveComplete);
