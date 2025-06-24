@@ -72,7 +72,7 @@
   // Установить начальное состояние
   goAnimation.addEventListener('DOMLoaded', () => {
     console.log('Lottie загружена → устанавливаем кадр 0');
-    goAnimation.goToAndStop(0, true);
+    goAnimation.goToAndStop(60, true);
   });
 
   let isHovered = false;
@@ -114,7 +114,7 @@
         // Принудительно устанавливаем кадр 0 после короткой паузы
         setTimeout(() => {
           goAnimation.stop();
-          goAnimation.goToAndStop(0, true);
+          goAnimation.goToAndStop(60, true);
           console.log('✓ Принудительно установлен кадр 0');
         }, 50);
       }
