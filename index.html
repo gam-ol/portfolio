@@ -78,29 +78,41 @@
 
   // Наведение курсора
   lottieElement.addEventListener('mouseenter', () => {
-    if (isHovered) return; // предотвратить повторное наведение
+    if (isHovered) return;
     isHovered = true;
+
+    // Снимаем все старые обработчики 'complete'
+    goAnimation.removeEventListener('complete');
 
     goAnimation.playSegments([0, 30], true);
 
-    goAnimation.addEventListener('complete', () => {
+    const onHoverComplete = () => {
       if (isHovered) {
-        goAnimation.goToAndStop(30, true); // Зависнуть на кадре 30
+        goAnimation.goToAndStop(30, true);
       }
-    }, { once: true });
+      goAnimation.removeEventListener('complete', onHoverComplete);
+    };
+
+    goAnimation.addEventListener('complete', onHoverComplete);
   });
 
   // Уход курсора
   lottieElement.addEventListener('mouseleave', () => {
     isHovered = false;
 
+    // Снимаем все старые обработчики 'complete'
+    goAnimation.removeEventListener('complete');
+
     goAnimation.playSegments([30, 60], true);
 
-    goAnimation.addEventListener('complete', () => {
+    const onLeaveComplete = () => {
       if (!isHovered) {
-        goAnimation.goToAndStop(0, true); // Вернуться на кадр
+        goAnimation.goToAndStop(0, true);
       }
-    }, { once: true });
+      goAnimation.removeEventListener('complete', onLeaveComplete);
+    };
+
+    goAnimation.addEventListener('complete', onLeaveComplete);
   });
 </script>
 
