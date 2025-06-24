@@ -69,9 +69,9 @@
     path: 'go.json'
   });
 
-  // Установить начальное состояние (кадр 65)
+  // Установить начальное состояние
   goAnimation.addEventListener('DOMLoaded', () => {
-    goAnimation.goToAndStop(65, true);
+    goAnimation.goToAndStop(0, true);
   });
 
   let isHovered = false;
@@ -98,7 +98,7 @@
 
     goAnimation.addEventListener('complete', () => {
       if (!isHovered) {
-        goAnimation.goToAndStop(65, true); // Вернуться на кадр 65
+        goAnimation.goToAndStop(0, true); // Вернуться на кадр
       }
     }, { once: true });
   });
