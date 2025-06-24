@@ -83,7 +83,8 @@
     isHovered = true;
 
     console.log('mouseenter → проигрываем 0–30');
-    goAnimation.removeEventListener('complete'); // сброс старых обработчиков
+    goAnimation.removeEventListener('complete');
+
     goAnimation.playSegments([0, 30], true);
 
     const onHoverComplete = () => {
@@ -102,20 +103,29 @@
     isHovered = false;
 
     console.log('mouseleave → проигрываем 30–60');
-    goAnimation.removeEventListener('complete'); // сброс старых обработчиков
+    goAnimation.removeEventListener('complete');
+
     goAnimation.playSegments([30, 60], true);
 
     const onLeaveComplete = () => {
       if (!isHovered) {
         console.log('leave complete → возвращаемся на кадр 0');
-        goAnimation.goToAndStop(0, true);
+
+        // Принудительно устанавливаем кадр 0 после короткой паузы
+        setTimeout(() => {
+          goAnimation.stop();
+          goAnimation.goToAndStop(0, true);
+          console.log('✓ Принудительно установлен кадр 0');
+        }, 50);
       }
+
       goAnimation.removeEventListener('complete', onLeaveComplete);
     };
 
     goAnimation.addEventListener('complete', onLeaveComplete);
   });
 </script>
+
 
 </body> 
 </html>
