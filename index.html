@@ -58,34 +58,49 @@
   </ul>
 
   <!-- 🎬 Скрипт Lottie: размещён в конце body -->
- <script>
+<script>
+  const lottieElement = document.getElementById('lottie-go');
+
   const goAnimation = lottie.loadAnimation({
-    container: document.getElementById('lottie-go'),
+    container: lottieElement,
     renderer: 'svg',
     loop: false,
     autoplay: false,
     path: 'go.json'
   });
 
-  // Установить на 0 кадр после загрузки
+  // Установить начальное состояние (кадр 65)
   goAnimation.addEventListener('DOMLoaded', () => {
-    goAnimation.goToAndStop(0, true);
+    goAnimation.goToAndStop(65, true);
   });
 
-  const lottieElement = document.getElementById('lottie-go');
+  let isHovered = false;
 
-  // Наведение мышки: проиграть с 0 по 30 кадр
+  // Наведение курсора
   lottieElement.addEventListener('mouseenter', () => {
+    if (isHovered) return; // предотвратить повторное наведение
+    isHovered = true;
+
     goAnimation.playSegments([0, 30], true);
+
+    goAnimation.addEventListener('complete', () => {
+      if (isHovered) {
+        goAnimation.goToAndStop(30, true); // Зависнуть на кадре 30
+      }
+    }, { once: true });
   });
 
-  // Увод мышки: проиграть с 30 по 60 кадр, затем остановиться на кадре 0
+  // Уход курсора
   lottieElement.addEventListener('mouseleave', () => {
+    isHovered = false;
+
     goAnimation.playSegments([30, 60], true);
 
     goAnimation.addEventListener('complete', () => {
-      goAnimation.goToAndStop(0, true);
-    }, { once: true }); // слушаем только один раз, чтобы не сработало лишнего
+      if (!isHovered) {
+        goAnimation.goToAndStop(65, true); // Вернуться на кадр 65
+      }
+    }, { once: true });
   });
 </script>
 
