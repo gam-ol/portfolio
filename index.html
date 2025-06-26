@@ -27,7 +27,7 @@
 
     .lottie-button {
       display: inline-block;
-      width: 140px;
+      width: 200px;
       height: 100px;
       vertical-align: middle;
       cursor: pointer;
@@ -40,7 +40,9 @@
     <a href="index.html">Main</a>
     <a href="table.html">Work</a>
     <div class="lottie-nav" id="lottie-go"></div>
-    <div class="lottie-button" id="story-btn"></div>
+    <a href="article.html">
+      <div class="lottie-button" id="story-btn"></div>
+    </a>
     <a href="Lottie.html">Lottie</a>
   </nav>
 
@@ -64,7 +66,7 @@
   </ul>
 
 <script>
-
+  // Универсальная логика анимации с зацикливанием по наведению
   function setupHoverLoopAnimation(elementId, jsonPath, startFrame, endFrame, stopFrame) {
     const el = document.getElementById(elementId);
     const anim = lottie.loadAnimation({
@@ -111,8 +113,8 @@
   }
 
   // Применяем для обеих кнопок
-  setupHoverLoopAnimation('lottie-go', 'go.json', 0, 60, 0);
-  setupHoverLoopAnimation('story-btn', 'story.json', 0, 90, 0);
+  setupHoverLoopAnimation('lottie-go', 'go.json', 0, 30, 60);
+  setupHoverLoopAnimation('story-btn', 'story.json', 1, 90, 1);
 </script>
 
 </body> 
