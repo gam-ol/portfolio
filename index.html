@@ -117,7 +117,7 @@
   let stopRequested = false;
 
   storyAnim.addEventListener('DOMLoaded', () => {
-    storyAnim.goToAndStop(1, true);
+    storyAnim.goToAndStop(0, true);
   });
 
   storyEl.addEventListener('mouseenter', () => {
@@ -127,7 +127,7 @@
 
     function loopPlay() {
       if (!isLooping) return;
-      storyAnim.playSegments([1, 90], true);
+      storyAnim.playSegments([0, 90], true);
 
       storyAnim.addEventListener('complete', function onLoop() {
         storyAnim.removeEventListener('complete', onLoop);
