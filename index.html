@@ -17,10 +17,17 @@
       color: #333;
     }
 
-    .lottie-nav,
-    .lottie-button {
+    .lottie-nav {
       display: inline-block;
       width: 100px;
+      height: 100px;
+      vertical-align: middle;
+      cursor: pointer;
+    }
+
+    .lottie-button {
+      display: inline-block;
+      width: 200px;
       height: 100px;
       vertical-align: middle;
       cursor: pointer;
@@ -134,7 +141,7 @@
         if (!stopRequested) {
           loopPlay();
         } else {
-          storyAnim.goToAndStop(1, true);
+          storyAnim.goToAndStop(0, true);
           isLooping = false;
         }
       });
