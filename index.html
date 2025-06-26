@@ -27,7 +27,7 @@
 
     .lottie-button {
       display: inline-block;
-      width: 140px;
+      width: 200px;
       height: 100px;
       vertical-align: middle;
       cursor: pointer;
@@ -64,92 +64,55 @@
   </ul>
 
 <script>
-  // go.json
-   const storyEl = document.getElementById('lottie-go');
-  let storyAnim = lottie.loadAnimation({
-    container: storyEl,
-    renderer: 'svg',
-    loop: false,
-    autoplay: false,
-    path: 'go.json'
-  });
 
-  let isLooping = false;
-  let stopRequested = false;
+  function setupHoverLoopAnimation(elementId, jsonPath, startFrame, endFrame, stopFrame) {
+    const el = document.getElementById(elementId);
+    const anim = lottie.loadAnimation({
+      container: el,
+      renderer: 'svg',
+      loop: false,
+      autoplay: false,
+      path: jsonPath
+    });
 
-  storyAnim.addEventListener('DOMLoaded', () => {
-    storyAnim.goToAndStop(0, true);
-  });
+    let isLooping = false;
+    let stopRequested = false;
 
-  storyEl.addEventListener('mouseenter', () => {
-    if (isLooping) return;
-    isLooping = true;
-    stopRequested = false;
+    anim.addEventListener('DOMLoaded', () => {
+      anim.goToAndStop(stopFrame, true);
+    });
 
-    function loopPlay() {
-      if (!isLooping) return;
-      storyAnim.playSegments([0, 90], true);
+    el.addEventListener('mouseenter', () => {
+      if (isLooping) return;
+      isLooping = true;
+      stopRequested = false;
 
-      storyAnim.addEventListener('complete', function onLoop() {
-        storyAnim.removeEventListener('complete', onLoop);
-        if (!stopRequested) {
-          loopPlay();
-        } else {
-          storyAnim.goToAndStop(0, true);
-          isLooping = false;
-        }
-      });
-    }
+      function loopPlay() {
+        if (!isLooping) return;
+        anim.playSegments([startFrame, endFrame], true);
 
-    loopPlay();
-  });
+        anim.addEventListener('complete', function onLoop() {
+          anim.removeEventListener('complete', onLoop);
+          if (!stopRequested) {
+            loopPlay();
+          } else {
+            anim.goToAndStop(stopFrame, true);
+            isLooping = false;
+          }
+        });
+      }
 
-  storyEl.addEventListener('mouseleave', () => {
-    stopRequested = true;
-  });
-  // story.json
-  const storyEl = document.getElementById('story-btn');
-  let storyAnim = lottie.loadAnimation({
-    container: storyEl,
-    renderer: 'svg',
-    loop: false,
-    autoplay: false,
-    path: 'story.json'
-  });
+      loopPlay();
+    });
 
-  let isLooping = false;
-  let stopRequested = false;
+    el.addEventListener('mouseleave', () => {
+      stopRequested = true;
+    });
+  }
 
-  storyAnim.addEventListener('DOMLoaded', () => {
-    storyAnim.goToAndStop(0, true);
-  });
-
-  storyEl.addEventListener('mouseenter', () => {
-    if (isLooping) return;
-    isLooping = true;
-    stopRequested = false;
-
-    function loopPlay() {
-      if (!isLooping) return;
-      storyAnim.playSegments([0, 90], true);
-
-      storyAnim.addEventListener('complete', function onLoop() {
-        storyAnim.removeEventListener('complete', onLoop);
-        if (!stopRequested) {
-          loopPlay();
-        } else {
-          storyAnim.goToAndStop(0, true);
-          isLooping = false;
-        }
-      });
-    }
-
-    loopPlay();
-  });
-
-  storyEl.addEventListener('mouseleave', () => {
-    stopRequested = true;
-  });
+  // Применяем для обеих кнопок
+  setupHoverLoopAnimation('lottie-go', 'go.json', 0, 60, 0);
+  setupHoverLoopAnimation('story-btn', 'story.json', 0, 90, 0);
 </script>
 
 </body> 
