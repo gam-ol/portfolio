@@ -64,53 +64,50 @@
   </ul>
 
 <script>
-  // go.json логика (hover-in/hover-out, однократно)
-  const el = document.getElementById('lottie-go');
-  const anim = lottie.loadAnimation({
-    container: el,
+  // go.json
+   const storyEl = document.getElementById('story-btn');
+  let storyAnim = lottie.loadAnimation({
+    container: storyEl,
     renderer: 'svg',
     loop: false,
     autoplay: false,
     path: 'go.json'
   });
 
-  anim.addEventListener('DOMLoaded', () => {
-    anim.goToAndStop(60, true);
+  let isLooping = false;
+  let stopRequested = false;
+
+  storyAnim.addEventListener('DOMLoaded', () => {
+    storyAnim.goToAndStop(0, true);
   });
 
-  let isHover = false;
+  storyEl.addEventListener('mouseenter', () => {
+    if (isLooping) return;
+    isLooping = true;
+    stopRequested = false;
 
-  el.addEventListener('mouseenter', () => {
-    if (isHover) return;
-    isHover = true;
+    function loopPlay() {
+      if (!isLooping) return;
+      storyAnim.playSegments([0, 90], true);
 
-    anim.removeEventListener('complete');
-    anim.playSegments([0, 30], true);
+      storyAnim.addEventListener('complete', function onLoop() {
+        storyAnim.removeEventListener('complete', onLoop);
+        if (!stopRequested) {
+          loopPlay();
+        } else {
+          storyAnim.goToAndStop(0, true);
+          isLooping = false;
+        }
+      });
+    }
 
-    anim.addEventListener('complete', function onEnter() {
-      if (isHover) anim.goToAndStop(30, true);
-      anim.removeEventListener('complete', onEnter);
-    });
+    loopPlay();
   });
 
-  el.addEventListener('mouseleave', () => {
-    isHover = false;
-
-    anim.removeEventListener('complete');
-    anim.playSegments([30, 60], true);
-
-    anim.addEventListener('complete', function onLeave() {
-      if (!isHover) {
-        setTimeout(() => {
-          anim.stop();
-          anim.goToAndStop(60, true);
-        }, 50);
-      }
-      anim.removeEventListener('complete', onLeave);
-    });
+  storyEl.addEventListener('mouseleave', () => {
+    stopRequested = true;
   });
-
-  // story.json логика с циклом от 1 до 90 кадров
+  // story.json
   const storyEl = document.getElementById('story-btn');
   let storyAnim = lottie.loadAnimation({
     container: storyEl,
