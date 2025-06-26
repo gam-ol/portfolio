@@ -17,11 +17,13 @@
       color: #333;
     }
 
-    .lottie-nav {
+    .lottie-nav,
+    .lottie-button {
       display: inline-block;
       width: 100px;
       height: 100px;
       vertical-align: middle;
+      cursor: pointer;
     }
   </style>
 </head> 
@@ -31,7 +33,7 @@
     <a href="index.html">Main</a>
     <a href="table.html">Work</a>
     <div class="lottie-nav" id="lottie-go"></div>
-    <a href="article.html">My Story</a>
+    <div class="lottie-button" id="story-btn"></div>
     <a href="Lottie.html">Lottie</a>
   </nav>
 
@@ -55,8 +57,8 @@
   </ul>
 
 <script>
+  // go.json логика (hover-in/hover-out, однократно)
   const el = document.getElementById('lottie-go');
-
   const anim = lottie.loadAnimation({
     container: el,
     renderer: 'svg',
@@ -100,8 +102,51 @@
       anim.removeEventListener('complete', onLeave);
     });
   });
-</script>
 
+  // story.json логика (loop при наведении)
+  const storyEl = document.getElementById('story-btn');
+  let storyAnim = lottie.loadAnimation({
+    container: storyEl,
+    renderer: 'svg',
+    loop: false,
+    autoplay: false,
+    path: 'story.json'
+  });
+
+  let isLooping = false;
+  let stopRequested = false;
+
+  storyAnim.addEventListener('DOMLoaded', () => {
+    storyAnim.goToAndStop(1, true);
+  });
+
+  storyEl.addEventListener('mouseenter', () => {
+    if (isLooping) return;
+    isLooping = true;
+    stopRequested = false;
+
+    function loopPlay() {
+      if (!isLooping) return;
+      storyAnim.playSegments([1, storyAnim.totalFrames - 1], true);
+
+      storyAnim.addEventListener('complete', function onLoop() {
+        storyAnim.removeEventListener('complete', onLoop);
+        if (!stopRequested) {
+          loopPlay(); // continue looping
+        } else {
+          storyAnim.goToAndStop(1, true); // stop at frame 1
+          isLooping = false;
+        }
+      });
+    }
+
+    loopPlay();
+  });
+
+  storyEl.addEventListener('mouseleave', () => {
+    stopRequested = true;
+  });
+</script>
 
 </body> 
 </html>
