@@ -103,7 +103,7 @@
     });
   });
 
-  // story.json логика (loop при наведении)
+  // story.json логика с циклом от 1 до 90 кадров
   const storyEl = document.getElementById('story-btn');
   let storyAnim = lottie.loadAnimation({
     container: storyEl,
@@ -127,14 +127,14 @@
 
     function loopPlay() {
       if (!isLooping) return;
-      storyAnim.playSegments([1, storyAnim.totalFrames - 1], true);
+      storyAnim.playSegments([1, 90], true);
 
       storyAnim.addEventListener('complete', function onLoop() {
         storyAnim.removeEventListener('complete', onLoop);
         if (!stopRequested) {
-          loopPlay(); // continue looping
+          loopPlay();
         } else {
-          storyAnim.goToAndStop(1, true); // stop at frame 1
+          storyAnim.goToAndStop(1, true);
           isLooping = false;
         }
       });
