@@ -38,7 +38,9 @@
 <body>
   <nav>
     <a href="index.html">Main</a>
-    <a href="table.html">Work</a>
+    <a href="table.html">
+      <div class="lottie-button" id="work-btn"></div>
+    </a>
     <div class="lottie-nav" id="lottie-go"></div>
     <a href="article.html">
       <div class="lottie-button" id="story-btn"></div>
@@ -95,9 +97,10 @@
     });
   }
 
-  // Применяем для обеих кнопок
+  // Применяем для всех кнопок
   setupHoverLoopAnimation('lottie-go', 'go.json', 0, 60, 0);
-  setupHoverLoopAnimation('story-btn', 'story.json', 0, 90, 0);
+  setupHoverLoopAnimation('story-btn', 'story.json', 0, 60, 0);
+  setupHoverLoopAnimation('work-btn', 'work.json', 0, 60, 0);
 </script>
 
 </body> 
