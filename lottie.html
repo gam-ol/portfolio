@@ -9,23 +9,14 @@
       margin: 0;
       padding: 0;
       height: 100%;
-      overflow: hidden;
-    }
-
-    #bg-lottie {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vmin; /* 1:1 format, based on viewport minimum dimension */
-      height: 100vmin;
-      z-index: -1;
+      overflow-x: hidden;
     }
 
     nav {
       text-align: center;
       padding: 5px;
       position: relative;
-      z-index: 1; /* above background */
+      z-index: 1;
     }
 
     nav a {
@@ -50,13 +41,28 @@
       vertical-align: middle;
       cursor: pointer;
     }
+
+    hr {
+      margin: 20px 0;
+    }
+
+    /* Центрирование фоновой анимации */
+    #bg-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: calc(100vh - 120px); /* корректируй под высоту nav + hr */
+    }
+
+    #bg-lottie {
+      width: 50vmin; /* формат 1:1 */
+      height: 50vmin;
+    }
   </style>
 </head> 
 
 <body>
-  <!-- Фоновая Lottie -->
-  <div id="bg-lottie"></div>
-
   <nav>
     <a href="index.html">Main</a>
     <a href="table.html">
@@ -70,6 +76,11 @@
   </nav>
 
   <hr>
+
+  <!-- Фоновая Lottie ниже hr -->
+  <div id="bg-wrapper">
+    <div id="bg-lottie"></div>
+  </div>
 
 <script>
   // Универсальная логика анимации кнопок
@@ -122,7 +133,6 @@
   setupHoverLoopAnimation('story-btn', 'story.json', 0, 60, 0);
   setupHoverLoopAnimation('work-btn', 'work.json', 0, 60, 0);
 
-
   // === Фоновая анимация ===
   const bgContainer = document.getElementById('bg-lottie');
   const bgAnim = lottie.loadAnimation({
@@ -137,33 +147,10 @@
   let mouseMoving = false;
   let mouseMoveTimeout;
 
-  // Запуск при движении мыши
   document.addEventListener('mousemove', () => {
     if (!mouseMoving && windowActive) {
       bgAnim.play();
     }
     mouseMoving = true;
 
-    clearTimeout(mouseMoveTimeout);
-    mouseMoveTimeout = setTimeout(() => {
-      mouseMoving = false;
-      bgAnim.pause();
-    }, 300); // 300ms без движения – пауза
-  });
-
-  // Статус окна
-  window.addEventListener('blur', () => {
-    windowActive = false;
-    bgAnim.pause();
-  });
-
-  window.addEventListener('focus', () => {
-    windowActive = true;
-    if (mouseMoving) {
-      bgAnim.play();
-    }
-  });
-</script>
-
-</body> 
-</html>
+    clear
