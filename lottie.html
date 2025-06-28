@@ -46,13 +46,13 @@
       margin: 20px 0;
     }
 
-    /* Центрирование фоновой анимации */
-    #bg-wrapper {
+    /* Центрирование фоновой анимации без обёртки */
+    #bg-lottie-container {
       display: flex;
       justify-content: center;
       align-items: center;
+      height: calc(100vh - 120px); /* скорректируй под высоту nav + hr */
       width: 100%;
-      height: calc(100vh - 120px); /* корректируй под высоту nav + hr */
     }
 
     #bg-lottie {
@@ -77,8 +77,8 @@
 
   <hr>
 
-  <!-- Фоновая Lottie ниже hr -->
-  <div id="bg-wrapper">
+  <!-- Фоновая Lottie ниже hr, по центру -->
+  <div id="bg-lottie-container">
     <div id="bg-lottie"></div>
   </div>
 
@@ -134,23 +134,46 @@
   setupHoverLoopAnimation('work-btn', 'work.json', 0, 60, 0);
 
   // === Фоновая анимация ===
-  const bgContainer = document.getElementById('bg-lottie');
-  const bgAnim = lottie.loadAnimation({
-    container: bgContainer,
-    renderer: 'svg',
-    loop: true,
-    autoplay: false,
-    path: 'bg.json'
+  window.addEventListener('DOMContentLoaded', () => {
+    const bgContainer = document.getElementById('bg-lottie');
+    const bgAnim = lottie.loadAnimation({
+      container: bgContainer,
+      renderer: 'svg',
+      loop: true,
+      autoplay: false,
+      path: 'bg.json'
+    });
+
+    let windowActive = true;
+    let mouseMoving = false;
+    let mouseMoveTimeout;
+
+    document.addEventListener('mousemove', () => {
+      if (!mouseMoving && windowActive) {
+        bgAnim.play();
+      }
+      mouseMoving = true;
+
+      clearTimeout(mouseMoveTimeout);
+      mouseMoveTimeout = setTimeout(() => {
+        mouseMoving = false;
+        bgAnim.pause();
+      }, 300);
+    });
+
+    window.addEventListener('blur', () => {
+      windowActive = false;
+      bgAnim.pause();
+    });
+
+    window.addEventListener('focus', () => {
+      windowActive = true;
+      if (mouseMoving) {
+        bgAnim.play();
+      }
+    });
   });
+</script>
 
-  let windowActive = true;
-  let mouseMoving = false;
-  let mouseMoveTimeout;
-
-  document.addEventListener('mousemove', () => {
-    if (!mouseMoving && windowActive) {
-      bgAnim.play();
-    }
-    mouseMoving = true;
-
-    clear
+</body> 
+</html>
