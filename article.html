@@ -30,9 +30,14 @@
       text-align: left;
     }
     .lottie-container {
-      width: 300px;
+      width: 100px;
       height: 300px;
       margin: 0 auto;
+    }
+    .img_story {
+      display: block; /* делает img блочным элементом */
+      margin: 0 auto; /* центрирует по горизонтали */
+      border: 4px solid #373A3E; /* обводка */
     }
   </style>
 </head>
@@ -45,7 +50,8 @@
   </nav>
 
   <hr>
-  <img src="oleg.png" width="200" height="200" alt="Oleg">
+  <img src="oleg.png" width="150" height="150" alt="Oleg" class="img_story">
+
   <h1><b style="color: #373A3E">Oleg</b><br></h1>
   <p>I am a motion designer with over two years of experience in broadcast graphics and freelance projects for documentaries. <br>I enjoy combining composition, typography, and history to create strong and meaningful visual projects.</p>
   <p>I love learning and applying new creative techniques and tools in my practice, so I am always learning something new.</p> 
@@ -60,7 +66,7 @@
       renderer: 'svg',
       loop: true,
       autoplay: true,
-      path: 'procrastination.json'
+      path: 'your_animation_file.json' // замените на путь к вашему .json файлу
     });
   </script>
 
