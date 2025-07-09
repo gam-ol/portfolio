@@ -1,7 +1,7 @@
-<!DOCTYPE html5> 
-<html> 
-<head> 
-  <meta charset="utf-8"> 
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
   <title>Oleg — Motion Graphics Designer</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
   <style>
@@ -24,6 +24,7 @@
       text-decoration: none;
       font-weight: bold;
       color: #333;
+      display: inline-block; /* обеспечиваем блочное поведение */
     }
 
     .lottie-nav {
@@ -46,134 +47,128 @@
       margin: 20px 0;
     }
 
-    /* Центрирование фоновой анимации без обёртки */
     #bg-lottie-container {
       display: flex;
       justify-content: center;
       align-items: center;
-      height: calc(100vh - 120px); /* скорректируй под высоту nav + hr */
+      height: calc(100vh - 120px);
       width: 100%;
     }
 
     #bg-lottie {
-      width: 50vmin; /* формат 1:1 */
+      width: 50vmin;
       height: 50vmin;
     }
   </style>
-</head> 
+</head>
 
 <body>
   <nav>
     <a href="index.html">Main</a>
-    <a href="table.html">
-      <div class="lottie-button" id="work-btn"></div>
-    </a>
+    <a href="table.html" id="work-btn" class="lottie-button"></a>
     <div class="lottie-nav" id="lottie-go"></div>
-    <a href="article.html">
-      <div class="lottie-button" id="story-btn"></div>
-    </a>
+    <a href="article.html" id="story-btn" class="lottie-button"></a>
     <a href="Lottie.html">Experiments</a>
   </nav>
 
   <hr>
 
-  <!-- Фоновая Lottie ниже hr, по центру -->
   <div id="bg-lottie-container">
     <div id="bg-lottie"></div>
   </div>
 
-<script>
-  // Универсальная логика анимации кнопок
-  function setupHoverLoopAnimation(elementId, jsonPath, startFrame, endFrame, stopFrame) {
-    const el = document.getElementById(elementId);
-    const anim = lottie.loadAnimation({
-      container: el,
-      renderer: 'svg',
-      loop: false,
-      autoplay: false,
-      path: jsonPath
-    });
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
 
-    let isLooping = false;
-    let stopRequested = false;
+      function setupHoverLoopAnimation(elementId, jsonPath, startFrame, endFrame, stopFrame) {
+        const el = document.getElementById(elementId);
+        const anim = lottie.loadAnimation({
+          container: el,
+          renderer: 'svg',
+          loop: false,
+          autoplay: false,
+          path: jsonPath
+        });
 
-    anim.addEventListener('DOMLoaded', () => {
-      anim.goToAndStop(stopFrame, true);
-    });
+        let isLooping = false;
+        let stopRequested = false;
 
-    el.addEventListener('mouseenter', () => {
-      if (isLooping) return;
-      isLooping = true;
-      stopRequested = false;
+        anim.addEventListener('data_ready', () => {
+          anim.goToAndStop(stopFrame, true);
+        });
 
-      function loopPlay() {
-        if (!isLooping) return;
-        anim.playSegments([startFrame, endFrame], true);
+        el.addEventListener('mouseenter', () => {
+          if (isLooping) return;
+          isLooping = true;
+          stopRequested = false;
 
-        anim.addEventListener('complete', function onLoop() {
-          anim.removeEventListener('complete', onLoop);
-          if (!stopRequested) {
-            loopPlay();
-          } else {
-            anim.goToAndStop(stopFrame, true);
-            isLooping = false;
+          function loopPlay() {
+            if (!isLooping) return;
+            anim.playSegments([startFrame, endFrame], true);
+
+            anim.addEventListener('complete', function onLoop() {
+              anim.removeEventListener('complete', onLoop);
+              if (!stopRequested) {
+                loopPlay();
+              } else {
+                anim.goToAndStop(stopFrame, true);
+                isLooping = false;
+              }
+            });
           }
+
+          loopPlay();
+        });
+
+        el.addEventListener('mouseleave', () => {
+          stopRequested = true;
         });
       }
 
-      loopPlay();
-    });
+      // Инициализация кнопок
+      setupHoverLoopAnimation('lottie-go', 'go.json', 0, 60, 0);
+      setupHoverLoopAnimation('story-btn', 'story.json', 0, 90, 0);
+      setupHoverLoopAnimation('work-btn', 'work.json', 0, 60, 0);
 
-    el.addEventListener('mouseleave', () => {
-      stopRequested = true;
-    });
-  }
+      // === Фоновая анимация ===
+      const bgContainer = document.getElementById('bg-lottie');
+      const bgAnim = lottie.loadAnimation({
+        container: bgContainer,
+        renderer: 'svg',
+        loop: true,
+        autoplay: false,
+        path: 'bg.json'
+      });
 
-  setupHoverLoopAnimation('lottie-go', 'go.json', 0, 60, 0);
-  setupHoverLoopAnimation('story-btn', 'story.json', 0, 90, 0);
-  setupHoverLoopAnimation('work-btn', 'work.json', 0, 60, 0);
+      let windowActive = true;
+      let mouseMoving = false;
+      let mouseMoveTimeout;
 
-  // === Фоновая анимация ===
-  window.addEventListener('DOMContentLoaded', () => {
-    const bgContainer = document.getElementById('bg-lottie');
-    const bgAnim = lottie.loadAnimation({
-      container: bgContainer,
-      renderer: 'svg',
-      loop: true,
-      autoplay: false,
-      path: 'bg.json'
-    });
+      document.addEventListener('mousemove', () => {
+        if (!mouseMoving && windowActive) {
+          bgAnim.play();
+        }
+        mouseMoving = true;
 
-    let windowActive = true;
-    let mouseMoving = false;
-    let mouseMoveTimeout;
+        clearTimeout(mouseMoveTimeout);
+        mouseMoveTimeout = setTimeout(() => {
+          mouseMoving = false;
+          bgAnim.pause();
+        }, 300);
+      });
 
-    document.addEventListener('mousemove', () => {
-      if (!mouseMoving && windowActive) {
-        bgAnim.play();
-      }
-      mouseMoving = true;
-
-      clearTimeout(mouseMoveTimeout);
-      mouseMoveTimeout = setTimeout(() => {
-        mouseMoving = false;
+      window.addEventListener('blur', () => {
+        windowActive = false;
         bgAnim.pause();
-      }, 300);
-    });
+      });
 
-    window.addEventListener('blur', () => {
-      windowActive = false;
-      bgAnim.pause();
+      window.addEventListener('focus', () => {
+        windowActive = true;
+        if (mouseMoving) {
+          bgAnim.play();
+        }
+      });
     });
-
-    window.addEventListener('focus', () => {
-      windowActive = true;
-      if (mouseMoving) {
-        bgAnim.play();
-      }
-    });
-  });
-</script>
-
-</body> 
+  </script>
+</body>
 </html>
