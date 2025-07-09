@@ -1,4 +1,4 @@
-<!DOCTYPE html5> 
+<!DOCTYPE html> 
 <html> 
 <head> 
   <meta charset="utf-8"> 
@@ -23,6 +23,9 @@
     padding: 5px 10px; 
     border-radius: 4px; 
     }
+    .active {
+    background-color: #f0f0f0; /* light gray background for active page */
+  }
   .main-content {
     text-align: center;
   }
@@ -68,5 +71,15 @@
     <li>YouTube</li>
   </ul>
   </div>
+    <script>
+    const links = document.querySelectorAll('nav a');
+    const currentPage = window.location.pathname.split('/').pop();
+
+    links.forEach(link => {
+      if (link.getAttribute('href') === currentPage) {
+        link.classList.add('active');
+      }
+    });
+  </script>
 </body> 
 </html>
