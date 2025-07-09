@@ -24,7 +24,7 @@
     border-radius: 4px; 
     }
     .active {
-    background-color: #f0f0f0; /* light gray background for active page */
+    background-color: #f0f0f0;
   }
   .main-content {
     text-align: center;
@@ -39,7 +39,7 @@
 
 <body>
   <nav>
-    <a href="index.html">Main</a>
+    <a href="index.html" class="active">Main</a>
     <a href="table.html">Work</a>
     <a href="article.html">My Sory</a>
     <a href="Lottie.html">Experiments</a>
@@ -71,15 +71,5 @@
     <li>YouTube</li>
   </ul>
   </div>
-    <script>
-    const links = document.querySelectorAll('nav a');
-    const currentPage = window.location.pathname.split('/').pop();
-
-    links.forEach(link => {
-      if (link.getAttribute('href') === currentPage) {
-        link.classList.add('active');
-      }
-    });
-  </script>
 </body> 
 </html>
