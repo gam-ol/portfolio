@@ -1,101 +1,145 @@
-<!DOCTYPE html> 
-<html> 
-<head> 
-  <meta charset="utf-8"> 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
   <title>Oleg — Motion Graphics Designer</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400&display=swap" rel="stylesheet">
   <style>
     body {
-  font-family: 'Lato', sans-serif;
-}
-    nav {
-      text-align: center;
-      padding: 5px;
+      font-family: 'Lato', sans-serif;
+      background: #F4F4F4;
     }
-    .lottie-nav {
-      display: inline-block;
-      width: 100px;
-      height: 100px;
-      vertical-align: middle;
-      cursor: pointer;
+
+    .nav-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      padding: 20px;
+      background: #fff;
+      border-bottom: 1px solid #ccc;
     }
-    nav a {
-      margin: 5px;
+
+    .nav-left, .nav-right {
+      display: flex;
+      gap: 20px;
+    }
+
+    .nav-left a, .nav-right a {
       text-decoration: none;
       font-weight: bold;
       color: #373A3E;
-       border: 2px solid #373A3E; 
-    padding: 5px 10px; 
-    border-radius: 4px; 
+      border: 2px solid #373A3E;
+      padding: 5px 10px;
+      border-radius: 4px;
+      transition: background 0.3s, color 0.3s;
     }
+
+    .nav-left a:hover, .nav-right a:hover {
+      background: #7C8591;
+      color: #fff;
+    }
+
     .active {
-    background-color: #7C8591;
-  }
-  .main-content {
-    text-align: center;
-  }
-    
-  .contacts {
-    display: inline-block;
-    text-align: left;
-  }
+      background-color: #7C8591;
+      color: #fff;
+    }
+
+    .nav-center {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .lottie-nav {
+      width: 100px;
+      height: 100px;
+      cursor: pointer;
+    }
+
+    .name-go {
+      text-align: center;
+      margin-top: 40px;
+    }
+
+    .contacts {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .contacts a {
+      text-decoration: none;
+      font-weight: bold;
+      color: #555;
+    }
+
+    .contacts img {
+      vertical-align: middle;
+      border: 1px solid #555;
+      border-radius: 50%;
+      width: 25px;
+      height: 25px;
+      margin-right: 5px;
+    }
   </style>
-</head> 
+</head>
 
 <body>
-  <nav>
-    <a href="index.html" class="active">Home</a>
-    <a href="table.html">Work</a>
-     <div class="lottie-nav" id="lottie-go"></div>
-    <a href="article.html">My Story</a>
-    <a href="Lottie.html">Experiments</a>
+
+  <nav class="nav-container">
+    <div class="nav-left">
+      <a href="index.html" class="active">Home</a>
+      <a href="table.html">Work</a>
+    </div>
+
+    <div class="nav-center">
+      <div class="lottie-nav" id="lottie-go"></div>
+    </div>
+
+    <div class="nav-right">
+      <a href="article.html">My Story</a>
+      <a href="Lottie.html">Experiments</a>
+    </div>
   </nav>
 
-  <hr>
-  <div>
-<div class="main-content">
-  <h1><b style="color: #6A737E">Oleg</b></h1>
-  <p>Motion Designer</p>
-  <p>Contact<br>gamulinsky@gmail.com<br>@gam_ol</p>
-    <p>
-  <a href="https://youtu.be/H_yvzxc7sK8?si=RdeJ0LFd8Pn6fvoN" target="_blank"
-     style="font-weight: bold; 
-            color: #555; 
-            text-decoration: none; 
-            border: 1px solid #555; 
-            padding: 5px 10px; 
-            border-radius: 4px;">
-    showreel
-  </a>
-    </p>
+  <div class="name-go">
+    <h1><b style="color: #6A737E">Oleg</b></h1>
+    <p>Motion Designer</p>
+    <p>Contact<br>gamulinsky@gmail.com<br>@gam_ol</p>
 
-  <div class="contacts">
-   <p>
-  <img src="link.png" width="25" height="25" alt="art" style="vertical-align: middle; border: 1px solid #555; border-radius: 50%;">
-  <a href="https://www.linkedin.com/in/gam-ol/" target="_blank" style="font-weight: bold; color: #555; text-decoration: none;"> Linkedin
-  </a>
-</p>
     <p>
-      <img src="inst.png" width="25" height="25" alt="art" style="vertical-align: middle; border: 1px solid #555; border-radius: 50%;">
-      <a href="https://www.instagram.com/gam_ol/" target="_blank" style="font-weight: bold; color: #555; text-decoration: none;"> Instagram
-    </a>
-    </p>
-    <p>
-      <img src="art.png" width="25" height="25" alt="art" style="vertical-align: middle; border: 1px solid #555; border-radius: 50%;">
-      <a href="https://www.artstation.com/gamol" target="_blank" style="font-weight: bold; color: #555; text-decoration: none;"> Artstation
-    </a>
-    </p>
-    <p>
-      <img src="youyube.png" width="25" height="25" alt="art" style="vertical-align: middle; border: 1px solid #555; border-radius: 50%;">
-      <a href="https://www.youtube.com/@Gam_Ol" target="_blank" style="font-weight: bold; color: #555; text-decoration: none;"> YouTube
+      <a href="https://youtu.be/H_yvzxc7sK8?si=RdeJ0LFd8Pn6fvoN" target="_blank"
+         style="font-weight: bold; color: #555; text-decoration: none; border: 1px solid #555; padding: 5px 10px; border-radius: 4px;">
+        showreel
       </a>
     </p>
-  
+
+    <div class="contacts">
+      <p>
+        <img src="link.png" alt="LinkedIn">
+        <a href="https://www.linkedin.com/in/gam-ol/" target="_blank">Linkedin</a>
+      </p>
+      <p>
+        <img src="inst.png" alt="Instagram">
+        <a href="https://www.instagram.com/gam_ol/" target="_blank">Instagram</a>
+      </p>
+      <p>
+        <img src="art.png" alt="Artstation">
+        <a href="https://www.artstation.com/gamol" target="_blank">Artstation</a>
+      </p>
+      <p>
+        <img src="youyube.png" alt="YouTube">
+        <a href="https://www.youtube.com/@Gam_Ol" target="_blank">YouTube</a>
+      </p>
+    </div>
   </div>
+
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-
       function setupHoverLoopAnimation(elementId, jsonPath, startFrame, endFrame, stopFrame) {
         const el = document.getElementById(elementId);
         const anim = lottie.loadAnimation({
@@ -140,9 +184,10 @@
           stopRequested = true;
         });
       }
-      setupHoverLoopAnimation('lottie-go', 'go.json', 0, 60, 0);
 
+      setupHoverLoopAnimation('lottie-go', 'go.json', 0, 60, 0);
     });
-</script>
-</body> 
+  </script>
+
+</body>
 </html>
