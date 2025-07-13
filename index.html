@@ -13,7 +13,13 @@
       text-align: center;
       padding: 5px;
     }
-
+    .lottie-nav {
+      display: inline-block;
+      width: 100px;
+      height: 100px;
+      vertical-align: middle;
+      cursor: pointer;
+    }
     nav a {
       margin: 5px;
       text-decoration: none;
@@ -39,13 +45,15 @@
 
 <body>
   <nav>
-    <a href="index.html" class="active">Main</a>
+    <a href="index.html" class="active">Home</a>
     <a href="table.html">Work</a>
+     <div class="lottie-nav" id="lottie-go"></div>
     <a href="article.html">My Story</a>
     <a href="Lottie.html">Experiments</a>
   </nav>
 
   <hr>
+  <div>
 <div class="main-content">
   <h1><b style="color: #6A737E">Oleg</b></h1>
   <p>Motion Designer</p>
@@ -85,5 +93,56 @@
     </p>
   
   </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+      function setupHoverLoopAnimation(elementId, jsonPath, startFrame, endFrame, stopFrame) {
+        const el = document.getElementById(elementId);
+        const anim = lottie.loadAnimation({
+          container: el,
+          renderer: 'svg',
+          loop: false,
+          autoplay: false,
+          path: jsonPath
+        });
+
+        let isLooping = false;
+        let stopRequested = false;
+
+        anim.addEventListener('data_ready', () => {
+          anim.goToAndStop(stopFrame, true);
+        });
+
+        el.addEventListener('mouseenter', () => {
+          if (isLooping) return;
+          isLooping = true;
+          stopRequested = false;
+
+          function loopPlay() {
+            if (!isLooping) return;
+            anim.playSegments([startFrame, endFrame], true);
+
+            anim.addEventListener('complete', function onLoop() {
+              anim.removeEventListener('complete', onLoop);
+              if (!stopRequested) {
+                loopPlay();
+              } else {
+                anim.goToAndStop(stopFrame, true);
+                isLooping = false;
+              }
+            });
+          }
+
+          loopPlay();
+        });
+
+        el.addEventListener('mouseleave', () => {
+          stopRequested = true;
+        });
+      }
+      setupHoverLoopAnimation('lottie-go', 'go.json', 0, 60, 0);
+
+    });
+</script>
 </body> 
 </html>
