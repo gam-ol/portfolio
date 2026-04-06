@@ -1,140 +1,243 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oleg | Motion Designer</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background-color: #0f1115;
-            color: #e6edf3;
-            line-height: 1.6;
-        }
+  <meta charset="UTF-8">
+  <title>Oleg — Motion Graphics Designer</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Lato', sans-serif;
+      background: #F4F4F4;
+    }
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
+    .nav-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      padding: 20px;
+      background: #fff;
+      border-bottom: 1px solid #ccc;
+    }
 
-        h1 {
-            font-size: 48px;
-            margin-bottom: 10px;
-        }
+    .nav-left, .nav-right {
+      display: flex;
+      gap: 20px;
+    }
 
-        h2 {
-            margin-top: 40px;
-            font-size: 24px;
-            border-bottom: 1px solid #30363d;
-            padding-bottom: 8px;
-        }
+    .nav-left a, .nav-right a {
+      text-decoration: none;
+      font-weight: bold;
+      color: #373A3E;
+      border: 2px solid #373A3E;
+      padding: 5px 10px;
+      border-radius: 4px;
+      transition: background 0.3s, color 0.3s;
+    }
 
-        p {
-            font-size: 16px;
-            color: #c9d1d9;
-        }
+    .nav-left a:hover, .nav-right a:hover {
+      background: #7C8591;
+      color: #fff;
+    }
 
-        .accent {
-            color: #6A737E;
-        }
+    .active {
+      background-color: #7C8591;
+      color: #fff;
+    }
 
-        .name-go {
-            margin-bottom: 40px;
-        }
+    .nav-center {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
-        .links a {
-            color: #58a6ff;
-            text-decoration: none;
-            margin-right: 15px;
-        }
+    .lottie-nav {
+      width: 100px;
+      height: 100px;
+      cursor: pointer;
+    }
 
-        .links a:hover {
-            text-decoration: underline;
-        }
+    .name-go {
+      text-align: center;
+      margin-top: 40px;
+    }
 
-        .skills {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 15px;
-        }
+    .contacts {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-top: 20px;
+    }
 
-        .skill {
-            background-color: #161b22;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 14px;
-        }
+    .contacts a {
+      text-decoration: none;
+      font-weight: bold;
+      color: #555;
+    }
 
-        footer {
-            margin-top: 60px;
-            font-size: 14px;
-            color: #8b949e;
-        }
-    </style>
+    .contacts img {
+      vertical-align: middle;
+      border: 1px solid #555;
+      border-radius: 50%;
+      width: 25px;
+      height: 25px;
+      margin-right: 5px;
+    }
+  </style>
 </head>
+
 <body>
 
-<div class="container">
-
-    <div class="name-go">
-        <h1><b class="accent">Oleg</b></h1>
-        <p><strong>Motion Designer</strong></p>
-        <p>
-            Animation • Infographics • Maps • App Motion • Broadcast Graphics<br>
-            After Effects • MOGRT • CasparCG
-        </p>
-        <p>
-            Contact<br>
-            gamulinsky@gmail.com<br>
-            @gam_ol
-        </p>
+  <nav class="nav-container">
+    <div class="nav-left">
+      <a href="index.html" class="active">Home</a>
+      <a href="table.html">Work</a>
     </div>
 
-    <section>
-        <h2>About</h2>
-        <p>
-            Motion designer with broad production experience in animation, infographics, maps, and broadcast graphics.
-            I create visual content for media and applications, and build reliable motion templates and systems used in real production environments.
-        </p>
-    </section>
+    <div class="nav-center">
+      <div class="lottie-nav" id="lottie-go"></div>
+    </div>
 
-    <section>
-        <h2>Showreel</h2>
-        <p>
-            Watch selected projects and motion design work.
-        </p>
-        <div class="links">
-            <a href="#">YouTube</a>
-            <a href="#">ArtStation</a>
-            <a href="#">LinkedIn</a>
-        </div>
-    </section>
+    <div class="nav-right">
+      <a href="article.html">My Story</a>
+      <a href="Lottie.html">Experiments</a>
+    </div>
+  </nav>
 
-    <section>
-        <h2>Core Skills</h2>
-        <div class="skills">
-            <div class="skill">After Effects</div>
-            <div class="skill">Cinema 4D</div>
-            <div class="skill">Unreal Engine</div>
-            <div class="skill">CasparCG</div>
-            <div class="skill">Motion Graphics</div>
-            <div class="skill">Infographics</div>
-            <div class="skill">Broadcast Design</div>
-            <div class="skill">Template Systems</div>
-            <div class="skill">AI Tools</div>
-        </div>
-    </section>
+  <div class="name-go">
 
-    <footer>
-        <p>
-            © 2026 Oleg — Motion Designer
-        </p>
-    </footer>
+    <h1><b style="color: #6A737E">Oleg</b></h1>
 
-</div>
+    <p>Motion Designer</p>
+
+    <p>
+      Contact<br>
+      gamulinsky@gmail.com<br>
+      @gam_ol
+    </p>
+
+    <!-- НОВЫЙ БЛОК ПРЕЗЕНТАЦИИ -->
+
+    <div style="
+      max-width: 720px;
+      margin-top: 40px;
+      margin-left: 60px;
+      text-align: left;
+      line-height: 1.6;
+      color: #373A3E;
+    ">
+
+      <p style="font-weight: bold; font-size: 18px;">
+        Motion designer working with ideas, systems, and storytelling —
+        turning complex things into clear visual motion.
+      </p>
+
+      <p>
+        I am a motion designer with broad production experience — from animation and infographics
+        to broadcast graphics and template systems.
+      </p>
+
+      <p>
+        I create visual stories, design motion for apps and media, and build tools in
+        After Effects, MOGRT, and CasparCG that help teams deliver content faster
+        and more reliably.
+      </p>
+
+    </div>
+
+    <p style="margin-top: 30px;">
+      <a href="https://youtu.be/H_yvzxc7sK8?si=RdeJ0LFd8Pn6fvoN"
+         target="_blank"
+         style="
+           font-weight: bold;
+           color: #555;
+           text-decoration: none;
+           border: 1px solid #555;
+           padding: 5px 10px;
+           border-radius: 4px;
+         ">
+        showreel
+      </a>
+    </p>
+
+    <div class="contacts">
+      <p>
+        <img src="link.png" alt="LinkedIn">
+        <a href="https://www.linkedin.com/in/gam-ol/" target="_blank">Linkedin</a>
+      </p>
+
+      <p>
+        <img src="inst.png" alt="Instagram">
+        <a href="https://www.instagram.com/gam_ol/" target="_blank">Instagram</a>
+      </p>
+
+      <p>
+        <img src="art.png" alt="Artstation">
+        <a href="https://www.artstation.com/gamol" target="_blank">Artstation</a>
+      </p>
+
+      <p>
+        <img src="youyube.png" alt="YouTube">
+        <a href="https://www.youtube.com/@Gam_Ol" target="_blank">YouTube</a>
+      </p>
+    </div>
+
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      function setupHoverLoopAnimation(elementId, jsonPath, startFrame, endFrame, stopFrame) {
+        const el = document.getElementById(elementId);
+        const anim = lottie.loadAnimation({
+          container: el,
+          renderer: 'svg',
+          loop: false,
+          autoplay: false,
+          path: jsonPath
+        });
+
+        let isLooping = false;
+        let stopRequested = false;
+
+        anim.addEventListener('data_ready', () => {
+          anim.goToAndStop(stopFrame, true);
+        });
+
+        el.addEventListener('mouseenter', () => {
+          if (isLooping) return;
+          isLooping = true;
+          stopRequested = false;
+
+          function loopPlay() {
+            if (!isLooping) return;
+
+            anim.playSegments([startFrame, endFrame], true);
+
+            anim.addEventListener('complete', function onLoop() {
+              anim.removeEventListener('complete', onLoop);
+
+              if (!stopRequested) {
+                loopPlay();
+              } else {
+                anim.goToAndStop(stopFrame, true);
+                isLooping = false;
+              }
+            });
+          }
+
+          loopPlay();
+        });
+
+        el.addEventListener('mouseleave', () => {
+          stopRequested = true;
+        });
+      }
+
+      setupHoverLoopAnimation('lottie-go', 'go.json', 0, 60, 0);
+    });
+  </script>
 
 </body>
 </html>
