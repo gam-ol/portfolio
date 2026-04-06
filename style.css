@@ -2,7 +2,7 @@
   display: grid;
   grid-template-columns: 1fr 100px 1fr;
   align-items: center;
-  padding: 20px 40px;
+  padding: 40px 40px;
   background: #ffffff;
   border-bottom: 1px solid #ccc;
 }
@@ -10,7 +10,7 @@
 .nav-left,
 .nav-right {
   display: flex;
-  gap: 50px;
+  gap: 20px;
 }
 
 .nav-left {
