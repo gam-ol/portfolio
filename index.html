@@ -2,22 +2,16 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-
   <title>Oleg — Motion Graphics Designer</title>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
-
   <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400&display=swap" rel="stylesheet">
-
-  <!-- ВОТ ЭТО ГЛАВНОЕ -->
   <link rel="stylesheet" href="style.css">
-
 </head>
 
 <body>
 
   <nav class="nav-container">
-
     <div class="nav-left">
       <a href="index.html" class="active">Home</a>
       <a href="table.html">Work</a>
@@ -31,12 +25,9 @@
       <a href="article.html">My Story</a>
       <a href="Lottie.html">Experiments</a>
     </div>
-
   </nav>
 
-  <main>
-    <!-- Пока пусто -->
-  </main>
+  <main></main>
 
   <footer class="footer">
     gamulinsky@gmail.com
@@ -44,9 +35,7 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-
       function setupHoverLoopAnimation(elementId, jsonPath, startFrame, endFrame, stopFrame) {
-
         const el = document.getElementById(elementId);
 
         const anim = lottie.loadAnimation({
@@ -65,47 +54,37 @@
         });
 
         el.addEventListener('mouseenter', () => {
-
           if (isLooping) return;
 
           isLooping = true;
           stopRequested = false;
 
           function loopPlay() {
-
             if (!isLooping) return;
 
             anim.playSegments([startFrame, endFrame], true);
 
             anim.addEventListener('complete', function onLoop() {
-
               anim.removeEventListener('complete', onLoop);
 
               if (!stopRequested) {
                 loopPlay();
-              }
-
-              else {
+              } else {
                 anim.goToAndStop(stopFrame, true);
                 isLooping = false;
               }
-
             });
-
           }
 
           loopPlay();
-
         });
 
         el.addEventListener('mouseleave', () => {
           stopRequested = true;
         });
-
       }
 
       setupHoverLoopAnimation('lottie-go', 'go.json', 0, 60, 0);
-
     });
   </script>
 
