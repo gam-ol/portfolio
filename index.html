@@ -3,13 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <title>Oleg — Motion Graphics Designer</title>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+
   <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400&display=swap" rel="stylesheet">
+
   <style>
     body {
       font-family: 'Lato', sans-serif;
       background: #F4F4F4;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
+
+    /* NAVIGATION */
 
     .nav-container {
       display: flex;
@@ -58,39 +67,25 @@
       cursor: pointer;
     }
 
-    .name-go {
+    /* FOOTER */
+
+    .footer {
+      margin-top: auto;
+      background: #373A3E;
+      color: white;
       text-align: center;
-      margin-top: 40px;
-    }
-
-    .contacts {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 15px;
-      margin-top: 20px;
-    }
-
-    .contacts a {
-      text-decoration: none;
-      font-weight: bold;
-      color: #555;
-    }
-
-    .contacts img {
-      vertical-align: middle;
-      border: 1px solid #555;
-      border-radius: 50%;
-      width: 25px;
-      height: 25px;
-      margin-right: 5px;
+      padding: 20px;
+      font-size: 16px;
     }
   </style>
 </head>
 
 <body>
 
+  <!-- MENU -->
+
   <nav class="nav-container">
+
     <div class="nav-left">
       <a href="index.html" class="active">Home</a>
       <a href="table.html">Work</a>
@@ -104,92 +99,24 @@
       <a href="article.html">My Story</a>
       <a href="Lottie.html">Experiments</a>
     </div>
+
   </nav>
 
-  <div class="name-go">
+  <!-- FOOTER -->
 
-    <h1><b style="color: #6A737E">Oleg</b></h1>
-
-    <p>Motion Designer</p>
-
-    <p>
-      Contact<br>
-      gamulinsky@gmail.com<br>
-      @gam_ol
-    </p>
-
-    <!-- НОВЫЙ БЛОК ПРЕЗЕНТАЦИИ -->
-
-    <div style="
-      max-width: 720px;
-      margin-top: 40px;
-      margin-left: 60px;
-      text-align: left;
-      line-height: 1.6;
-      color: #373A3E;
-    ">
-
-      <p style="font-weight: bold; font-size: 18px;">
-        Motion designer working with ideas, systems, and storytelling —
-        turning complex things into clear visual motion.
-      </p>
-
-      <p>
-        I am a motion designer with broad production experience — from animation and infographics
-        to broadcast graphics and template systems.
-      </p>
-
-      <p>
-        I create visual stories, design motion for apps and media, and build tools in
-        After Effects, MOGRT, and CasparCG that help teams deliver content faster
-        and more reliably.
-      </p>
-
-    </div>
-
-    <p style="margin-top: 30px;">
-      <a href="https://youtu.be/H_yvzxc7sK8?si=RdeJ0LFd8Pn6fvoN"
-         target="_blank"
-         style="
-           font-weight: bold;
-           color: #555;
-           text-decoration: none;
-           border: 1px solid #555;
-           padding: 5px 10px;
-           border-radius: 4px;
-         ">
-        showreel
-      </a>
-    </p>
-
-    <div class="contacts">
-      <p>
-        <img src="link.png" alt="LinkedIn">
-        <a href="https://www.linkedin.com/in/gam-ol/" target="_blank">Linkedin</a>
-      </p>
-
-      <p>
-        <img src="inst.png" alt="Instagram">
-        <a href="https://www.instagram.com/gam_ol/" target="_blank">Instagram</a>
-      </p>
-
-      <p>
-        <img src="art.png" alt="Artstation">
-        <a href="https://www.artstation.com/gamol" target="_blank">Artstation</a>
-      </p>
-
-      <p>
-        <img src="youyube.png" alt="YouTube">
-        <a href="https://www.youtube.com/@Gam_Ol" target="_blank">YouTube</a>
-      </p>
-    </div>
-
+  <div class="footer">
+    gamulinsky@gmail.com
   </div>
+
+  <!-- LOTTIE SCRIPT -->
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+
       function setupHoverLoopAnimation(elementId, jsonPath, startFrame, endFrame, stopFrame) {
+
         const el = document.getElementById(elementId);
+
         const anim = lottie.loadAnimation({
           container: el,
           renderer: 'svg',
@@ -206,36 +133,47 @@
         });
 
         el.addEventListener('mouseenter', () => {
+
           if (isLooping) return;
+
           isLooping = true;
           stopRequested = false;
 
           function loopPlay() {
+
             if (!isLooping) return;
 
             anim.playSegments([startFrame, endFrame], true);
 
             anim.addEventListener('complete', function onLoop() {
+
               anim.removeEventListener('complete', onLoop);
 
               if (!stopRequested) {
                 loopPlay();
-              } else {
+              }
+
+              else {
                 anim.goToAndStop(stopFrame, true);
                 isLooping = false;
               }
+
             });
+
           }
 
           loopPlay();
+
         });
 
         el.addEventListener('mouseleave', () => {
           stopRequested = true;
         });
+
       }
 
       setupHoverLoopAnimation('lottie-go', 'go.json', 0, 60, 0);
+
     });
   </script>
 
