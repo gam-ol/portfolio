@@ -1,116 +1,200 @@
+/* RESET */
+
 * {
   box-sizing: border-box;
 }
 
+/* BASE LAYOUT */
+
 body {
   font-family: 'Lato', sans-serif;
+
   background: #F4F4F4;
+
   margin: 0;
+
   min-height: 100vh;
+
   display: flex;
+
   flex-direction: column;
 }
 
 /* NAVIGATION */
 
 .nav-container {
+
   display: grid;
+
   grid-template-columns: 1fr 100px 1fr;
+
   align-items: center;
+
   padding: 20px 40px;
+
   background: #ffffff;
+
   border-bottom: 1px solid #ccc;
+
 }
 
 .nav-left,
 .nav-right {
+
   display: flex;
+
   gap: 20px;
+
 }
 
 .nav-left {
+
   justify-content: flex-end;
+
 }
 
 .nav-right {
+
   justify-content: flex-start;
+
 }
 
 .nav-left a,
 .nav-right a {
+
   text-decoration: none;
+
   font-weight: bold;
+
   color: #373A3E;
+
   border: 2px solid #373A3E;
-  padding: 5px 10px;
+
+  padding: 6px 12px;
+
   border-radius: 4px;
+
   transition: background 0.3s, color 0.3s;
+
+  font-size: 14px;
+
 }
 
 .nav-left a:hover,
 .nav-right a:hover {
+
   background: #7C8591;
+
   color: #ffffff;
+
 }
 
 .active {
+
   background-color: #7C8591;
+
   color: #ffffff;
+
 }
 
 .nav-center {
+
   display: flex;
+
   justify-content: center;
+
   align-items: center;
+
 }
 
 .lottie-nav {
+
   width: 100px;
+
   height: 100px;
+
   cursor: pointer;
+
 }
 
 /* MAIN */
 
 main {
+
   flex: 1;
+
 }
 
 /* FOOTER */
 
 .footer {
+
   background: #2F3337;
+
   color: #ffffff;
+
   text-align: center;
-  padding: 24px 20px;
+
+  padding: 20px;
+
   font-size: 14px;
+
   letter-spacing: 0.5px;
+
 }
 
-@media (max-width: 768px) {
-  .nav-container {
-    padding: 24px 20px;
-  }
+/* =============================== */
+/* MOBILE ADAPTATION */
+/* =============================== */
+
+@media (pointer: coarse) {
+
+  /* увеличиваем центр */
 
   .lottie-nav {
-    width: 140px;
-    height: 140px;
+
+    width: clamp(120px, 18vw, 160px);
+
+    height: clamp(120px, 18vw, 160px);
+
   }
 
-  .nav-left,
-  .nav-right {
-    gap: 16px;
-  }
+  /* увеличиваем кнопки */
 
   .nav-left a,
   .nav-right a {
-    font-size: 18px;
+
+    font-size: clamp(16px, 2.2vw, 20px);
+
     padding: 10px 16px;
+
     border-radius: 6px;
+
   }
 
-  .footer {
-    font-size: 18px;
-    padding: 24px 20px;
+  /* увеличиваем расстояния */
+
+  .nav-left,
+  .nav-right {
+
+    gap: 16px;
+
   }
+
+  .nav-container {
+
+    padding: 24px 20px;
+
+  }
+
+  /* увеличиваем footer */
+
+  .footer {
+
+    font-size: clamp(16px, 2vw, 20px);
+
+    padding: 24px 20px;
+
+  }
+
 }
