@@ -86,3 +86,31 @@ main {
   font-size: 14px;
   letter-spacing: 0.5px;
 }
+
+@media (max-width: 768px) {
+  .nav-container {
+    padding: 24px 20px;
+  }
+
+  .lottie-nav {
+    width: 140px;
+    height: 140px;
+  }
+
+  .nav-left,
+  .nav-right {
+    gap: 16px;
+  }
+
+  .nav-left a,
+  .nav-right a {
+    font-size: 18px;
+    padding: 10px 16px;
+    border-radius: 6px;
+  }
+
+  .footer {
+    font-size: 18px;
+    padding: 24px 20px;
+  }
+}
