@@ -12,26 +12,40 @@ body {
   font-family: 'Lato', sans-serif;
   background: #f4f4f4;
   color: #111111;
+
   min-height: 100vh;
+
   display: flex;
   flex-direction: column;
+
   overflow-x: hidden;
 }
 
 /* NAV */
 
 .nav-container {
+
   display: grid;
-  grid-template-columns: 1fr 100px 1fr;
+
+  grid-template-columns:
+    1fr
+    100px
+    1fr;
+
   align-items: center;
+
   padding: 20px 32px;
+
   background: #ffffff;
+
   border-bottom: 1px solid #d9d9d9;
 }
 
 .nav-left,
 .nav-right {
+
   display: flex;
+
   gap: 16px;
 }
 
@@ -44,38 +58,54 @@ body {
 }
 
 .nav-center {
+
   display: flex;
+
   justify-content: center;
   align-items: center;
 }
 
 .lottie-nav {
+
   width: 100px;
   height: 100px;
+
   cursor: pointer;
 }
 
 .nav-left a,
 .nav-right a {
+
   text-decoration: none;
+
   font-weight: 700;
-  color: #111111;
-  border: 1px solid #111111;
+
+  color: #222222;
+
+  border: 1px solid #222222;
+
   padding: 6px 12px;
+
   border-radius: 4px;
-  transition: background 0.25s, color 0.25s;
+
   font-size: 14px;
+
   white-space: nowrap;
+
+  transition: background 0.25s,
+              color 0.25s;
 }
 
 .nav-left a:hover,
 .nav-right a:hover {
-  background: #111111;
+
+  background: #222222;
   color: #ffffff;
 }
 
 .active {
-  background: #111111;
+
+  background: #222222;
   color: #ffffff;
 }
 
@@ -88,164 +118,257 @@ main {
 /* HERO */
 
 .hero {
+
   max-width: 1100px;
+
   margin: 0 auto;
-  padding: 64px 32px 32px;
+
+  padding: 64px 32px 16px;
 }
 
 .hero-name {
-  margin: 0 0 18px 0;
-  font-size: 48px;
-  line-height: 1.05;
-  font-weight: 700;
-  color: #111111;
-}
 
-.hero-tagline {
-  max-width: 760px;
   margin: 0;
-  font-size: 22px;
-  line-height: 1.5;
-  color: #3a3a3a;
+
+  font-size: 48px;
+
+  font-weight: 700;
+
+  line-height: 1.05;
+
+  color: #111111;
 }
 
 /* ABOUT */
 
 .about {
+
   max-width: 1100px;
+
   margin: 0 auto;
-  padding: 20px 32px 80px;
+
+  padding: 0 32px 80px;
+
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 320px;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    320px;
+
   gap: 48px;
+
   align-items: start;
 }
 
+/* TAGLINE */
+
+.about-intro {
+
+  grid-column: 1 / -1;
+
+  max-width: 760px;
+
+  margin-bottom: 8px;
+}
+
+.hero-tagline {
+
+  margin: 0;
+
+  font-size: 22px;
+
+  line-height: 1.5;
+
+  color: #3f3f3f;
+}
+
+/* TEXT */
+
 .about-text {
+
   font-size: 20px;
+
   line-height: 1.7;
+
   color: #1f1f1f;
 }
 
 .about-text p {
+
   margin: 0 0 20px 0;
 }
 
+/* PHOTO */
+
 .about-side {
+
   display: flex;
+
   flex-direction: column;
+
   align-items: center;
 }
 
 .profile-photo {
+
   width: 100%;
+
   max-width: 280px;
+
   display: block;
+
   border: 1px solid #222222;
+
   margin-bottom: 18px;
 }
 
 /* SOCIAL */
 
 .social-links {
+
   width: 100%;
+
   max-width: 280px;
+
   display: flex;
+
   flex-direction: column;
+
   gap: 10px;
 }
 
 .social-links a {
+
   text-decoration: none;
+
   text-align: center;
-  color: #111111;
-  border: 1px solid #111111;
+
+  color: #222222;
+
+  border: 1px solid #222222;
+
   padding: 10px 12px;
+
   font-size: 14px;
+
   font-weight: 700;
-  transition: background 0.25s, color 0.25s;
+
+  transition: background 0.25s,
+              color 0.25s;
 }
 
 .social-links a:hover {
-  background: #111111;
+
+  background: #222222;
   color: #ffffff;
 }
 
 /* FOOTER */
 
 .footer {
-  background: #111111;
+
+  background: #222222;
+
   color: #ffffff;
+
   text-align: center;
+
   padding: 22px 16px;
+
   font-size: 14px;
+
   letter-spacing: 0.4px;
 }
 
-/* TOUCH DEVICES */
+/* MOBILE */
 
 @media (pointer: coarse) {
+
   .nav-container {
-    grid-template-columns: 1fr 140px 1fr;
+
+    grid-template-columns:
+      1fr
+      140px
+      1fr;
+
     padding: 20px 16px;
   }
 
   .lottie-nav {
+
     width: 140px;
     height: 140px;
   }
 
   .nav-left,
   .nav-right {
+
     gap: 10px;
   }
 
   .nav-left a,
   .nav-right a {
+
     font-size: 18px;
+
     padding: 10px 14px;
-    border-radius: 6px;
   }
 
   .hero {
-    padding: 48px 20px 24px;
+
+    padding: 48px 20px 12px;
   }
 
   .hero-name {
+
     font-size: 40px;
   }
 
+  .about {
+
+    grid-template-columns: 1fr;
+
+    gap: 32px;
+
+    padding: 0 20px 56px;
+  }
+
   .hero-tagline {
+
     font-size: 24px;
+
     line-height: 1.45;
   }
 
-  .about {
-    grid-template-columns: 1fr;
-    gap: 32px;
-    padding: 16px 20px 56px;
-  }
-
   .about-text {
+
     font-size: 22px;
+
     line-height: 1.65;
   }
 
   .profile-photo {
+
     max-width: 320px;
   }
 
   .social-links {
+
     max-width: 320px;
   }
 
   .social-links a {
+
     font-size: 18px;
+
     padding: 12px 14px;
   }
 
   .footer {
+
     font-size: 18px;
+
     padding: 24px 16px;
   }
+
 }
