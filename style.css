@@ -141,8 +141,7 @@ main {
   width: 100%;
   max-width: 280px;
   display: block;
-  border: 1px solid #111111;
-  filter: grayscale(100%);
+  border: 1px solid #222222;
   margin-bottom: 18px;
 }
 
