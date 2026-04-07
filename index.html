@@ -3,18 +3,26 @@
 <head>
 
   <meta charset="UTF-8">
+
+  <!-- Важно для адаптации под мобильные -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Oleg — Motion Graphics Designer</title>
 
+  <!-- Lottie -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
 
+  <!-- Font -->
   <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- CSS -->
   <link rel="stylesheet" href="style.css">
 
 </head>
 
 <body>
+
+  <!-- NAVIGATION -->
 
   <nav class="nav-container">
 
@@ -34,9 +42,14 @@
 
   </nav>
 
+
+  <!-- MAIN -->
+
   <main>
 
     <section class="intro-section">
+
+      <!-- LEFT SIDE -->
 
       <div class="intro-left">
 
@@ -50,19 +63,25 @@
         </p>
 
         <div class="intro-text">
+
           <p>
-            I am a motion designer with broad production experience — from animation
-            and infographics to broadcast graphics and template systems.
+            I am a motion designer with broad production experience —
+            from animation and infographics to broadcast graphics
+            and template systems.
           </p>
 
           <p>
-            I create visual stories, design motion for apps and media, and build
-            tools in After Effects, MOGRT, and CasparCG that help teams deliver
-            content faster and more reliably.
+            I create visual stories, design motion for apps and media,
+            and build tools in After Effects, MOGRT, and CasparCG
+            that help teams deliver content faster and more reliably.
           </p>
+
         </div>
 
       </div>
+
+
+      <!-- RIGHT SIDE -->
 
       <div class="intro-right">
 
@@ -73,17 +92,19 @@
         >
 
         <div class="social-links">
-          <a href="https://www.linkedin.com/in/gam-ol/" target="_blank" rel="noopener noreferrer">
+
+          <a href="https://www.linkedin.com/in/gam-ol/" target="_blank">
             LinkedIn
           </a>
 
-          <a href="https://www.youtube.com/@Gam_Ol" target="_blank" rel="noopener noreferrer">
+          <a href="https://www.youtube.com/@Gam_Ol" target="_blank">
             YouTube
           </a>
 
-          <a href="https://www.instagram.com/gam_ol/" target="_blank" rel="noopener noreferrer">
+          <a href="https://www.instagram.com/gam_ol/" target="_blank">
             Instagram
           </a>
+
         </div>
 
       </div>
@@ -92,64 +113,110 @@
 
   </main>
 
+
+  <!-- FOOTER -->
+
   <footer class="footer">
+
     gamulinsky@gmail.com
+
   </footer>
 
+
+  <!-- LOTTIE SCRIPT -->
+
   <script>
+
     document.addEventListener('DOMContentLoaded', () => {
-      function setupHoverLoopAnimation(elementId, jsonPath, startFrame, endFrame, stopFrame) {
+
+      function setupHoverLoopAnimation(
+        elementId,
+        jsonPath,
+        startFrame,
+        endFrame,
+        stopFrame
+      ) {
+
         const el = document.getElementById(elementId);
 
         const anim = lottie.loadAnimation({
+
           container: el,
           renderer: 'svg',
           loop: false,
           autoplay: false,
           path: jsonPath
+
         });
 
         let isLooping = false;
         let stopRequested = false;
 
         anim.addEventListener('data_ready', () => {
+
           anim.goToAndStop(stopFrame, true);
+
         });
 
         el.addEventListener('mouseenter', () => {
+
           if (isLooping) return;
 
           isLooping = true;
           stopRequested = false;
 
           function loopPlay() {
+
             if (!isLooping) return;
 
             anim.playSegments([startFrame, endFrame], true);
 
             anim.addEventListener('complete', function onLoop() {
+
               anim.removeEventListener('complete', onLoop);
 
               if (!stopRequested) {
+
                 loopPlay();
-              } else {
-                anim.goToAndStop(stopFrame, true);
-                isLooping = false;
+
               }
+
+              else {
+
+                anim.goToAndStop(stopFrame, true);
+
+                isLooping = false;
+
+              }
+
             });
+
           }
 
           loopPlay();
+
         });
 
         el.addEventListener('mouseleave', () => {
+
           stopRequested = true;
+
         });
+
       }
 
-      setupHoverLoopAnimation('lottie-go', 'go.json', 0, 60, 0);
+      setupHoverLoopAnimation(
+        'lottie-go',
+        'go.json',
+        0,
+        60,
+        0
+      );
+
     });
+
   </script>
 
 </body>
+
 </html>
