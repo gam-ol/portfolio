@@ -3,8 +3,6 @@
 <head>
 
   <meta charset="UTF-8">
-
-  <!-- Важно для мобильных -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Oleg — Motion Graphics Designer</title>
@@ -12,14 +10,11 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
 
   <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
-
   <link rel="stylesheet" href="style.css">
 
 </head>
 
 <body>
-
-  <!-- NAVIGATION -->
 
   <nav class="nav-container">
 
@@ -39,59 +34,37 @@
 
   </nav>
 
-
-  <!-- MAIN -->
-
   <main>
 
-    <!-- NAME -->
+    <section class="intro-section">
 
-    <section class="hero">
+      <div class="intro-left">
 
-      <h1 class="hero-name">
-        Oleg Gamulinskii
-      </h1>
+        <h1 class="intro-name">
+          Oleg Gamulinskii
+        </h1>
 
-    </section>
-
-
-    <!-- ABOUT -->
-
-    <section class="about">
-
-      <!-- TAGLINE -->
-
-      <div class="about-intro">
-
-        <p class="hero-tagline">
+        <p class="intro-tagline">
           Motion designer working with ideas, systems, and storytelling —
           turning complex things into clear visual motion.
         </p>
 
-      </div>
+        <div class="intro-text">
+          <p>
+            I am a motion designer with broad production experience — from animation
+            and infographics to broadcast graphics and template systems.
+          </p>
 
-
-      <!-- TEXT -->
-
-      <div class="about-text">
-
-        <p>
-          I am a motion designer with broad production experience — from animation
-          and infographics to broadcast graphics and template systems.
-        </p>
-
-        <p>
-          I create visual stories, design motion for apps and media, and build
-          tools in After Effects, MOGRT, and CasparCG that help teams deliver
-          content faster and more reliably.
-        </p>
+          <p>
+            I create visual stories, design motion for apps and media, and build
+            tools in After Effects, MOGRT, and CasparCG that help teams deliver
+            content faster and more reliably.
+          </p>
+        </div>
 
       </div>
 
-
-      <!-- PHOTO + SOCIAL -->
-
-      <div class="about-side">
+      <div class="intro-right">
 
         <img
           src="photo.jpg"
@@ -100,7 +73,6 @@
         >
 
         <div class="social-links">
-
           <a href="https://www.linkedin.com/in/gam-ol/" target="_blank" rel="noopener noreferrer">
             LinkedIn
           </a>
@@ -112,7 +84,6 @@
           <a href="https://www.instagram.com/gam_ol/" target="_blank" rel="noopener noreferrer">
             Instagram
           </a>
-
         </div>
 
       </div>
@@ -121,24 +92,13 @@
 
   </main>
 
-
-  <!-- FOOTER -->
-
   <footer class="footer">
-
     gamulinsky@gmail.com
-
   </footer>
 
-
-  <!-- LOTTIE -->
-
   <script>
-
     document.addEventListener('DOMContentLoaded', () => {
-
       function setupHoverLoopAnimation(elementId, jsonPath, startFrame, endFrame, stopFrame) {
-
         const el = document.getElementById(elementId);
 
         const anim = lottie.loadAnimation({
@@ -157,57 +117,39 @@
         });
 
         el.addEventListener('mouseenter', () => {
-
           if (isLooping) return;
 
           isLooping = true;
           stopRequested = false;
 
           function loopPlay() {
-
             if (!isLooping) return;
 
             anim.playSegments([startFrame, endFrame], true);
 
             anim.addEventListener('complete', function onLoop() {
-
               anim.removeEventListener('complete', onLoop);
 
               if (!stopRequested) {
                 loopPlay();
-              }
-
-              else {
+              } else {
                 anim.goToAndStop(stopFrame, true);
                 isLooping = false;
               }
-
             });
-
           }
 
           loopPlay();
-
         });
 
         el.addEventListener('mouseleave', () => {
           stopRequested = true;
         });
-
       }
 
-      setupHoverLoopAnimation(
-        'lottie-go',
-        'go.json',
-        0,
-        60,
-        0
-      );
-
+      setupHoverLoopAnimation('lottie-go', 'go.json', 0, 60, 0);
     });
-
   </script>
 
 </body>
-
 </html>
