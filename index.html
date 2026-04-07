@@ -3,53 +3,112 @@
 <head>
 
   <meta charset="UTF-8">
-
-  <!-- Важно для адаптации под мобильные -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Oleg — Motion Graphics Designer</title>
+  <title>Oleg Gamulinskii — Motion Designer</title>
 
-  <!-- Lottie -->
+  <meta
+    name="description"
+    content="Motion designer working with animation, broadcast graphics, infographics, and template systems. Creating visual stories and tools in After Effects, MOGRT, and CasparCG."
+  >
+
+  <meta
+    name="author"
+    content="Oleg Gamulinskii"
+  >
+
+  <meta
+    name="robots"
+    content="index, follow"
+  >
+
+  <meta
+    property="og:title"
+    content="Oleg Gamulinskii — Motion Designer"
+  >
+
+  <meta
+    property="og:description"
+    content="Motion designer working with animation, broadcast graphics, infographics, and template systems."
+  >
+
+  <meta
+    property="og:type"
+    content="website"
+  >
+
+  <meta
+    property="og:image"
+    content="https://yourdomain.com/photo.jpg"
+  >
+
+  <meta
+    property="og:url"
+    content="https://yourdomain.com/"
+  >
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Oleg Gamulinskii",
+    "jobTitle": "Motion Designer",
+    "description": "Motion designer working with animation, broadcast graphics, infographics, and template systems.",
+    "url": "https://yourdomain.com/",
+    "sameAs": [
+      "https://www.linkedin.com/in/gam-ol/",
+      "https://www.youtube.com/@Gam_Ol",
+      "https://www.instagram.com/gam_ol/"
+    ],
+    "knowsAbout": [
+      "Motion design",
+      "After Effects",
+      "Broadcast graphics",
+      "Infographics",
+      "Template systems",
+      "CasparCG",
+      "MOGRT",
+      "Animation"
+    ]
+  }
+  </script>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
 
-  <!-- Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap"
+    rel="stylesheet"
+  >
 
-  <!-- CSS -->
   <link rel="stylesheet" href="style.css">
 
 </head>
 
 <body>
 
-  <!-- NAVIGATION -->
+  <header>
+    <nav class="nav-container">
 
-  <nav class="nav-container">
+      <div class="nav-left">
+        <a href="index.html" class="active">About me</a>
+        <a href="table.html">Portfolio</a>
+      </div>
 
-    <div class="nav-left">
-      <a href="index.html" class="active">About me</a>
-      <a href="table.html">Portfolio</a>
-    </div>
+      <div class="nav-center">
+        <div class="lottie-nav" id="lottie-go"></div>
+      </div>
 
-    <div class="nav-center">
-      <div class="lottie-nav" id="lottie-go"></div>
-    </div>
+      <div class="nav-right">
+        <a href="article.html">My Story</a>
+        <a href="Lottie.html">Experiments</a>
+      </div>
 
-    <div class="nav-right">
-      <a href="article.html">My Story</a>
-      <a href="Lottie.html">Experiments</a>
-    </div>
-
-  </nav>
-
-
-  <!-- MAIN -->
+    </nav>
+  </header>
 
   <main>
 
     <section class="intro-section">
-
-      <!-- LEFT SIDE -->
 
       <div class="intro-left">
 
@@ -80,28 +139,26 @@
 
       </div>
 
-
-      <!-- RIGHT SIDE -->
-
       <div class="intro-right">
 
         <img
           src="photo.jpg"
-          alt="Oleg portrait"
+          alt="Oleg Gamulinskii motion designer portrait"
           class="profile-photo"
+          loading="lazy"
         >
 
         <div class="social-links">
 
-          <a href="https://www.linkedin.com/in/gam-ol/" target="_blank">
+          <a href="https://www.linkedin.com/in/gam-ol/" target="_blank" rel="noopener noreferrer">
             LinkedIn
           </a>
 
-          <a href="https://www.youtube.com/@Gam_Ol" target="_blank">
+          <a href="https://www.youtube.com/@Gam_Ol" target="_blank" rel="noopener noreferrer">
             YouTube
           </a>
 
-          <a href="https://www.instagram.com/gam_ol/" target="_blank">
+          <a href="https://www.instagram.com/gam_ol/" target="_blank" rel="noopener noreferrer">
             Instagram
           </a>
 
@@ -113,110 +170,64 @@
 
   </main>
 
-
-  <!-- FOOTER -->
-
   <footer class="footer">
-
     gamulinsky@gmail.com
-
   </footer>
 
-
-  <!-- LOTTIE SCRIPT -->
-
   <script>
-
     document.addEventListener('DOMContentLoaded', () => {
-
-      function setupHoverLoopAnimation(
-        elementId,
-        jsonPath,
-        startFrame,
-        endFrame,
-        stopFrame
-      ) {
-
+      function setupHoverLoopAnimation(elementId, jsonPath, startFrame, endFrame, stopFrame) {
         const el = document.getElementById(elementId);
 
         const anim = lottie.loadAnimation({
-
           container: el,
           renderer: 'svg',
           loop: false,
           autoplay: false,
           path: jsonPath
-
         });
 
         let isLooping = false;
         let stopRequested = false;
 
         anim.addEventListener('data_ready', () => {
-
           anim.goToAndStop(stopFrame, true);
-
         });
 
         el.addEventListener('mouseenter', () => {
-
           if (isLooping) return;
 
           isLooping = true;
           stopRequested = false;
 
           function loopPlay() {
-
             if (!isLooping) return;
 
             anim.playSegments([startFrame, endFrame], true);
 
             anim.addEventListener('complete', function onLoop() {
-
               anim.removeEventListener('complete', onLoop);
 
               if (!stopRequested) {
-
                 loopPlay();
-
-              }
-
-              else {
-
+              } else {
                 anim.goToAndStop(stopFrame, true);
-
                 isLooping = false;
-
               }
-
             });
-
           }
 
           loopPlay();
-
         });
 
         el.addEventListener('mouseleave', () => {
-
           stopRequested = true;
-
         });
-
       }
 
-      setupHoverLoopAnimation(
-        'lottie-go',
-        'go.json',
-        0,
-        60,
-        0
-      );
-
+      setupHoverLoopAnimation('lottie-go', 'go.json', 0, 60, 0);
     });
-
   </script>
 
 </body>
-
 </html>
