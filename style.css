@@ -2,9 +2,7 @@
   box-sizing: border-box;
 }
 
-html,
-body {
-  width: 100%;
+html, body {
   margin: 0;
   padding: 0;
 }
@@ -18,14 +16,13 @@ body {
   overflow-x: hidden;
 }
 
-/* NAVIGATION */
+/* NAV */
 
 .nav-container {
-  width: 100%;
   display: grid;
   grid-template-columns: 1fr 100px 1fr;
   align-items: center;
-  padding: 20px 40px;
+  padding: 20px 32px;
   background: #ffffff;
   border-bottom: 1px solid #ccc;
 }
@@ -33,7 +30,7 @@ body {
 .nav-left,
 .nav-right {
   display: flex;
-  gap: 20px;
+  gap: 16px;
 }
 
 .nav-left {
@@ -42,29 +39,6 @@ body {
 
 .nav-right {
   justify-content: flex-start;
-}
-
-.nav-left a,
-.nav-right a {
-  text-decoration: none;
-  font-weight: bold;
-  color: #373A3E;
-  border: 2px solid #373A3E;
-  padding: 6px 12px;
-  border-radius: 4px;
-  transition: background 0.3s, color 0.3s;
-  font-size: 14px;
-}
-
-.nav-left a:hover,
-.nav-right a:hover {
-  background: #7C8591;
-  color: #ffffff;
-}
-
-.active {
-  background-color: #7C8591;
-  color: #ffffff;
 }
 
 .nav-center {
@@ -79,17 +53,39 @@ body {
   cursor: pointer;
 }
 
+.nav-left a,
+.nav-right a {
+  text-decoration: none;
+  font-weight: bold;
+  color: #373A3E;
+  border: 2px solid #373A3E;
+  padding: 6px 12px;
+  border-radius: 4px;
+  transition: background 0.3s, color 0.3s;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.nav-left a:hover,
+.nav-right a:hover {
+  background: #7C8591;
+  color: #ffffff;
+}
+
+.active {
+  background-color: #7C8591;
+  color: #ffffff;
+}
+
 /* MAIN */
 
 main {
   flex: 1;
-  width: 100%;
 }
 
 /* FOOTER */
 
 .footer {
-  width: 100%;
   background: #2F3337;
   color: #ffffff;
   text-align: center;
@@ -101,29 +97,30 @@ main {
 /* MOBILE */
 
 @media (pointer: coarse) {
-  .lottie-nav {
-    width: clamp(120px, 18vw, 160px);
-    height: clamp(120px, 18vw, 160px);
+  .nav-container {
+    padding: 20px 16px;
+    grid-template-columns: 1fr 140px 1fr;
   }
 
-  .nav-left a,
-  .nav-right a {
-    font-size: clamp(16px, 2.2vw, 20px);
-    padding: 10px 16px;
-    border-radius: 6px;
+  .lottie-nav {
+    width: 140px;
+    height: 140px;
   }
 
   .nav-left,
   .nav-right {
-    gap: 16px;
+    gap: 10px;
   }
 
-  .nav-container {
-    padding: 24px 20px;
+  .nav-left a,
+  .nav-right a {
+    font-size: 18px;
+    padding: 10px 14px;
+    border-radius: 6px;
   }
 
   .footer {
-    font-size: clamp(16px, 2vw, 20px);
-    padding: 24px 20px;
+    font-size: 18px;
+    padding: 24px 16px;
   }
 }
