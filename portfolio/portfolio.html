@@ -1,69 +1,204 @@
 <!DOCTYPE html>
-<html>
-<head> 
-  <meta charset="utf-8"> 
-  <title>Oleg — Motion Graphics Designer</title>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Portfolio — Oleg Gamulinskii</title>
+
+  <meta
+    name="description"
+    content="Portfolio of Oleg Gamulinskii — motion design, broadcast graphics, infographics, animation systems, and visual storytelling."
+  >
+
+  <meta
+    name="author"
+    content="Oleg Gamulinskii"
+  >
+
+  <meta
+    name="robots"
+    content="index, follow"
+  >
+
+  <meta
+    property="og:title"
+    content="Portfolio — Oleg Gamulinskii"
+  >
+
+  <meta
+    property="og:description"
+    content="Selected motion design, broadcast graphics, infographic, and animation projects."
+  >
+
+  <meta
+    property="og:type"
+    content="website"
+  >
+
+  <meta
+    property="og:image"
+    content="https://yourdomain.com/photo.jpg"
+  >
+
+  <meta
+    property="og:url"
+    content="https://yourdomain.com/portfolio/portfolio.html"
+  >
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400&display=swap" rel="stylesheet">
-  <style>
-        body {
-  font-family: 'Lato', sans-serif;
-}
-     nav {
-      text-align: center;
-      padding: 5px;
-    }
-    nav {
-      text-align: center;
-      padding: 5px;
-    }
 
-    nav a {
-      margin: 5px;
-      text-decoration: none;
-      font-weight: bold;
-      color: #373A3E;
-       border: 2px solid #373A3E; 
-    padding: 5px 10px; 
-    border-radius: 4px; 
-    }
-    .active {
-    background-color: #7C8591;
-  }
-</style>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <!-- стиль лежит уровнем выше -->
+  <link rel="stylesheet" href="../style.css">
+
 </head>
-<body>
- <nav>
-    <a href="index.html">Main</a>
-    <a href="table.html" class="active">Work</a>
-    <a href="article.html">My Story</a>
-    <a href="Lottie.html">Experiments</a>
-  </nav>
 
-  <hr>
-  <h1>Portfolio</h1>
-  <table border="1">
-    <tr>
-      <th>3d</th>
-      <th>2d</th>
-    </tr>
-    <tr>
-      <td><a href="https://www.youtube.com/watch?v=8r7x8-lUnkY" target="_blank">
-  <img src="rune.png" width="200" height="200" alt="rune">
-</a></td>
-      <td><a href="https://www.youtube.com/watch?v=EL2iXLJhboE" target="_blank">
-  <img src="band.png" width="200" height="200" alt="band"></a>
-      </td>
-    </tr>
-    <tr>
-      <td><a href="https://www.youtube.com/watch?v=-R_j-YCyJIo" target="_blank">
-  <img src="pages.png" width="200" height="200" alt="omen"></a>
-      </td>
-      <td>
-        <a href="https://www.youtube.com/watch?v=s0Wf7bddUI0" target="_blank">
-  <img src="heart.png" width="200" height="200" alt="heart"></a>
-      </td>
-    </tr>
-  </table>
+<body>
+
+  <header>
+    <nav class="nav-container">
+
+      <div class="nav-left">
+        <a href="../index.html">About me</a>
+        <a href="portfolio.html" class="active">Portfolio</a>
+      </div>
+
+      <div class="nav-center">
+        <div class="lottie-nav" id="lottie-go"></div>
+      </div>
+
+      <div class="nav-right">
+        <a href="../article.html">My Story</a>
+        <a href="../Lottie.html">Experiments</a>
+      </div>
+
+    </nav>
+  </header>
+
+  <main>
+
+    <section class="intro-section">
+
+      <div class="intro-left">
+
+        <h1 class="intro-name">
+          Portfolio
+        </h1>
+
+        <p class="intro-tagline">
+          Selected projects in motion design, broadcast graphics,
+          infographics, maps, and visual systems.
+        </p>
+
+        <div class="intro-text">
+
+          <p>
+            Here you can explore selected works focused on storytelling,
+            animation systems, broadcast packaging, and motion-based visual communication.
+          </p>
+
+          <p>
+            The page can be expanded later with case studies, project descriptions,
+            still frames, video previews, and links to full presentations.
+          </p>
+
+          <p>
+            This structure keeps the same visual logic as the main page,
+            while letting the portfolio exist as a separate section.
+          </p>
+
+        </div>
+
+      </div>
+
+      <div class="intro-right">
+
+        <div class="social-links">
+
+          <a href="https://www.linkedin.com/in/gam-ol/" target="_blank" rel="noopener noreferrer">
+            LinkedIn
+          </a>
+
+          <a href="https://www.youtube.com/@Gam_Ol" target="_blank" rel="noopener noreferrer">
+            YouTube
+          </a>
+
+          <a href="https://www.instagram.com/gam_ol/" target="_blank" rel="noopener noreferrer">
+            Instagram
+          </a>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    gamulinsky@gmail.com
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      function setupHoverLoopAnimation(elementId, jsonPath, startFrame, endFrame, stopFrame) {
+        const el = document.getElementById(elementId);
+
+        const anim = lottie.loadAnimation({
+          container: el,
+          renderer: 'svg',
+          loop: false,
+          autoplay: false,
+          path: jsonPath
+        });
+
+        let isLooping = false;
+        let stopRequested = false;
+
+        anim.addEventListener('data_ready', () => {
+          anim.goToAndStop(stopFrame, true);
+        });
+
+        el.addEventListener('mouseenter', () => {
+          if (isLooping) return;
+
+          isLooping = true;
+          stopRequested = false;
+
+          function loopPlay() {
+            if (!isLooping) return;
+
+            anim.playSegments([startFrame, endFrame], true);
+
+            anim.addEventListener('complete', function onLoop() {
+              anim.removeEventListener('complete', onLoop);
+
+              if (!stopRequested) {
+                loopPlay();
+              } else {
+                anim.goToAndStop(stopFrame, true);
+                isLooping = false;
+              }
+            });
+          }
+
+          loopPlay();
+        });
+
+        el.addEventListener('mouseleave', () => {
+          stopRequested = true;
+        });
+      }
+
+      setupHoverLoopAnimation('lottie-go', '../go.json', 0, 60, 0);
+    });
+  </script>
+
 </body>
 </html>
