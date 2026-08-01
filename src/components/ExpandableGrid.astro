@@ -1,0 +1,62 @@
+---
+import type { Material, MaterialView } from '../data/portfolio';
+import MaterialPreview from './MaterialPreview.astro';
+
+interface Props {
+  view: MaterialView;
+  items: Material[];
+}
+
+const { view, items } = Astro.props;
+---
+
+<div class="expandable-grid" data-expandable-grid={view}>
+  {items.map((item) => (
+    <article class="material-card" data-material-card>
+      <button
+        class="material-trigger"
+        type="button"
+        id={item.id}
+        data-material-id={item.id}
+        aria-expanded="false"
+        aria-controls={`${view}-details`}
+      >
+        <MaterialPreview preview={item.preview} />
+        <span class="material-card-copy">
+          <span class="material-meta">{item.status}</span>
+          <span class="material-title">{item.title}</span>
+          <span class="material-summary">{item.summary}</span>
+          <span class="material-action">View details <span aria-hidden="true">↓</span></span>
+        </span>
+      </button>
+
+      <div class="detail-template" id={`${view}-template-${item.id}`} hidden>
+        <div class="detail-panel-inner">
+          <div class="detail-heading">
+            <div>
+              <p class="eyebrow">{item.status}</p>
+              <h3>{item.title}</h3>
+            </div>
+            <button class="detail-close" type="button" aria-label={`Close ${item.title} details`}>Close</button>
+          </div>
+          <p class="detail-description">{item.description}</p>
+          <div class="detail-footer">
+            <ul class="technology-list" aria-label="Technologies">
+              {item.technologies.map((technology) => <li>{technology}</li>)}
+            </ul>
+            {item.links && item.links.length > 0 && (
+              <div class="detail-links">
+                {item.links.map((link) => (
+                  <a href={link.href} target={link.href.startsWith('http') ? '_blank' : undefined} rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}>
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </article>
+  ))}
+  <aside class="detail-panel" id={`${view}-details`} hidden aria-live="polite"></aside>
+</div>

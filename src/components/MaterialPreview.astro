@@ -1,0 +1,24 @@
+---
+import type { Preview } from '../data/portfolio';
+
+interface Props {
+  preview: Preview;
+}
+
+const { preview } = Astro.props;
+---
+
+<div class="material-preview" aria-hidden="true">
+  {preview.type === 'lottie' ? (
+    <div class="material-lottie" data-lottie="loop" data-source={preview.source}></div>
+  ) : (
+    <img
+      src={`https://i.ytimg.com/vi/${preview.youtubeId}/hqdefault.jpg`}
+      alt=""
+      loading="lazy"
+      width="480"
+      height="360"
+    />
+  )}
+  <span class="preview-label">{preview.type === 'lottie' ? 'Motion preview' : 'Video preview'}</span>
+</div>

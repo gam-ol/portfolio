@@ -1,0 +1,30 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="My Story — Oleg Gamulinskii"
+  description="About Oleg Gamulinskii and his approach to motion design, broadcast graphics, and visual storytelling."
+>
+  <main id="main-content" class="story-page">
+    <p class="eyebrow">Background and approach</p>
+    <h1 class="page-title">My Story</h1>
+    <p class="page-lede">I like the point where visual storytelling meets a reliable production system.</p>
+
+    <div class="story-layout">
+      <img class="story-portrait" src="/assets/oleg.png" alt="Portrait of Oleg Gamulinskii" width="220" height="220" />
+      <div class="story-copy">
+        <p>
+          I am a motion designer with experience in broadcast graphics and freelance documentary projects. I enjoy combining composition, typography, and history to create clear, meaningful visual work.
+        </p>
+        <p>
+          My practice moves between individual shots and repeatable systems: animation and infographics on one side, templates, MOGRT, and CasparCG workflows on the other.
+        </p>
+        <p>
+          I keep learning new creative techniques and tools, then test how they can make both the image and the production process stronger.
+        </p>
+        <div class="story-motion" data-lottie="loop" data-source="/assets/procrastination.json" aria-label="Procrastination character animation"></div>
+      </div>
+    </div>
+  </main>
+</BaseLayout>

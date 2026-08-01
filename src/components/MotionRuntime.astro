@@ -1,0 +1,57 @@
+<script>
+  import lottie from 'lottie-web/build/player/lottie_light';
+
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  document.querySelectorAll<HTMLElement>('[data-lottie]').forEach((element) => {
+    if (element.dataset.ready === 'true') return;
+
+    const source = element.dataset.source;
+    if (!source) return;
+
+    const mode = element.dataset.lottie;
+    const start = Number(element.dataset.start ?? 0);
+    const end = Number(element.dataset.end ?? 60);
+    const animation = lottie.loadAnimation({
+      container: element,
+      renderer: 'svg',
+      loop: mode === 'loop' && !reducedMotion,
+      autoplay: mode === 'loop' && !reducedMotion,
+      path: source,
+    });
+
+    element.dataset.ready = 'true';
+
+    if (mode !== 'hover' || reducedMotion) return;
+
+    let looping = false;
+    let stopRequested = false;
+
+    animation.addEventListener('data_ready', () => animation.goToAndStop(start, true));
+
+    const playLoop = () => {
+      if (!looping) return;
+      animation.playSegments([start, end], true);
+    };
+
+    animation.addEventListener('complete', () => {
+      if (stopRequested) {
+        animation.goToAndStop(start, true);
+        looping = false;
+        return;
+      }
+      playLoop();
+    });
+
+    element.addEventListener('pointerenter', () => {
+      if (looping) return;
+      looping = true;
+      stopRequested = false;
+      playLoop();
+    });
+
+    element.addEventListener('pointerleave', () => {
+      stopRequested = true;
+    });
+  });
+</script>
