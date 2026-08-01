@@ -1,0 +1,35 @@
+---
+import GoMark from './GoMark.astro';
+
+const pathname = Astro.url.pathname.toLowerCase();
+const navItems = [
+  { href: '/', label: 'About me', active: pathname === '/' },
+  { href: '/portfolio/', label: 'Portfolio', active: pathname.startsWith('/portfolio') },
+  { href: '/story/', label: 'My Story', active: pathname.startsWith('/story') },
+  { href: '/experiments/', label: 'Experiments', active: pathname.startsWith('/experiments') },
+];
+---
+
+<header class="site-header">
+  <nav class="main-nav" aria-label="Primary navigation">
+    <div class="nav-group nav-group-left">
+      {navItems.slice(0, 2).map((item) => (
+        <a href={item.href} class:list={{ active: item.active }} aria-current={item.active ? 'page' : undefined}>
+          {item.label}
+        </a>
+      ))}
+    </div>
+
+    <a class="brand-link" href="/" aria-label="Oleg Gamulinskii — home">
+      <GoMark />
+    </a>
+
+    <div class="nav-group nav-group-right">
+      {navItems.slice(2).map((item) => (
+        <a href={item.href} class:list={{ active: item.active }} aria-current={item.active ? 'page' : undefined}>
+          {item.label}
+        </a>
+      ))}
+    </div>
+  </nav>
+</header>

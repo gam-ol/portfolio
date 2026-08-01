@@ -1,0 +1,124 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import VideoCard from '../../components/VideoCard.astro';
+import ExpandableGrid from '../../components/ExpandableGrid.astro';
+import PortfolioInteractions from '../../components/PortfolioInteractions.astro';
+import { materialsFor, projectCategories } from '../../data/portfolio';
+
+const sections = [
+  { id: 'projects', label: 'Projects' },
+  { id: 'experiments', label: 'Experiments' },
+  { id: 'tools', label: 'Tools' },
+  { id: 'templates', label: 'Templates' },
+];
+---
+
+<BaseLayout
+  title="Portfolio — Oleg Gamulinskii"
+  description="Motion design projects, experiments, production tools, and reusable template systems by Oleg Gamulinskii."
+>
+  <main id="main-content">
+    <div class="portfolio-nav-shell">
+      <nav class="portfolio-nav" aria-label="Portfolio sections">
+        {sections.map((section, index) => (
+          <a href={`#${section.id}`} data-section-link={section.id} class:list={{ active: index === 0 }}>
+            {section.label}
+          </a>
+        ))}
+      </nav>
+    </div>
+
+    <div class="portfolio-page">
+      <header class="portfolio-intro">
+        <p class="eyebrow">Selected work and working systems</p>
+        <h1 class="page-title">Portfolio</h1>
+        <p class="page-lede">
+          Projects show the work. Experiments, tools, and templates reveal how the system is built.
+        </p>
+      </header>
+
+      <section class="portfolio-section-block" id="projects" data-portfolio-section>
+        <header class="section-header">
+          <h2 class="section-title">Projects</h2>
+          <p class="section-description">
+            The existing video portfolio, kept as direct, lightweight previews. Select a thumbnail to load the full player.
+          </p>
+        </header>
+
+        {projectCategories.map((category) => (
+          <section class="project-category" id={category.id}>
+            <header class="project-category-header">
+              <h3 class="project-category-title">{category.title}</h3>
+              <p class="project-category-text">{category.description}</p>
+            </header>
+            <div class="video-grid">
+              {category.items.map((item) => <VideoCard item={item} />)}
+            </div>
+          </section>
+        ))}
+      </section>
+
+      <section class="portfolio-section-block" id="experiments" data-portfolio-section>
+        <header class="section-header">
+          <h2 class="section-title">Experiments</h2>
+          <p class="section-description">
+            Visual tests, interaction studies, and motion ideas that are allowed to stay exploratory.
+          </p>
+        </header>
+        <ExpandableGrid view="experiments" items={materialsFor('experiments')} />
+      </section>
+
+      <section class="portfolio-section-block" id="tools" data-portfolio-section>
+        <header class="section-header">
+          <h2 class="section-title">Tools</h2>
+          <p class="section-description">
+            Production-oriented systems that structure content, automate repetition, or connect motion to delivery workflows.
+          </p>
+        </header>
+        <ExpandableGrid view="tools" items={materialsFor('tools')} />
+      </section>
+
+      <section class="portfolio-section-block" id="templates" data-portfolio-section>
+        <header class="section-header">
+          <h2 class="section-title">Templates</h2>
+          <p class="section-description">
+            Reusable components prepared for real production rather than a single finished shot.
+          </p>
+        </header>
+        <ExpandableGrid view="templates" items={materialsFor('templates')} />
+      </section>
+    </div>
+  </main>
+
+  <PortfolioInteractions />
+
+  <script>
+    const links = new Map(
+      Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-section-link]')).map((link) => [
+        link.dataset.sectionLink,
+        link,
+      ]),
+    );
+    const sections = document.querySelectorAll<HTMLElement>('[data-portfolio-section]');
+
+    const setActive = (id: string) => {
+      links.forEach((link, key) => {
+        link.classList.toggle('active', key === id);
+        if (key === id) link.setAttribute('aria-current', 'location');
+        else link.removeAttribute('aria-current');
+      });
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible?.target.id) setActive(visible.target.id);
+      },
+      { rootMargin: '-18% 0px -62% 0px', threshold: [0, 0.05, 0.2] },
+    );
+
+    sections.forEach((section) => observer.observe(section));
+  </script>
+</BaseLayout>

@@ -1,0 +1,23 @@
+{
+  "name": "oleg-gamulinskii-portfolio",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "lottie-web": "^5.13.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "astro": "^7.1.6",
+    "typescript": "^5.9.2"
+  },
+  "overrides": {
+    "sharp": "^0.35.3"
+  }
+}

@@ -1,0 +1,110 @@
+<script>
+  const videoButtons = document.querySelectorAll<HTMLButtonElement>('[data-youtube-id]');
+
+  videoButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const youtubeId = button.dataset.youtubeId;
+      const title = button.dataset.youtubeTitle ?? 'YouTube video';
+      if (!youtubeId) return;
+
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://www.youtube-nocookie.com/embed/${youtubeId}?autoplay=1&rel=0`;
+      iframe.title = title;
+      iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+      iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+      iframe.allowFullscreen = true;
+      button.replaceWith(iframe);
+    });
+  });
+
+  const grids = Array.from(document.querySelectorAll<HTMLElement>('[data-expandable-grid]'));
+  let openButton: HTMLButtonElement | null = null;
+  let openPanel: HTMLElement | null = null;
+  let lastColumns = 0;
+
+  const columnsFor = (grid: HTMLElement) => {
+    const template = getComputedStyle(grid).gridTemplateColumns;
+    return Math.max(1, template.split(' ').filter(Boolean).length);
+  };
+
+  const movePanelAfterRow = (grid: HTMLElement, button: HTMLButtonElement, panel: HTMLElement) => {
+    const cards = Array.from(grid.querySelectorAll<HTMLElement>(':scope > [data-material-card]'));
+    const card = button.closest<HTMLElement>('[data-material-card]');
+    if (!card) return;
+
+    const cardIndex = cards.indexOf(card);
+    const columns = columnsFor(grid);
+    const rowEnd = Math.min(cards.length - 1, Math.floor(cardIndex / columns) * columns + columns - 1);
+    cards[rowEnd].after(panel);
+    lastColumns = columns;
+  };
+
+  const closeDetails = (restoreFocus = false) => {
+    if (!openButton || !openPanel) return;
+    openButton.setAttribute('aria-expanded', 'false');
+    openButton.closest('[data-material-card]')?.classList.remove('is-open');
+    openPanel.hidden = true;
+    openPanel.replaceChildren();
+    if (restoreFocus) openButton.focus();
+    openButton = null;
+    openPanel = null;
+  };
+
+  grids.forEach((grid) => {
+    const panel = grid.querySelector<HTMLElement>(':scope > .detail-panel');
+    const buttons = grid.querySelectorAll<HTMLButtonElement>('[data-material-id]');
+    if (!panel) return;
+
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => {
+        if (openButton === button) {
+          closeDetails(true);
+          return;
+        }
+
+        closeDetails();
+
+        const itemId = button.dataset.materialId;
+        const view = grid.dataset.expandableGrid;
+        const template = itemId && view
+          ? document.querySelector<HTMLElement>(`#${view}-template-${itemId}`)
+          : null;
+        if (!template) return;
+
+        panel.innerHTML = template.innerHTML;
+        panel.hidden = false;
+        button.setAttribute('aria-expanded', 'true');
+        button.closest('[data-material-card]')?.classList.add('is-open');
+        openButton = button;
+        openPanel = panel;
+        movePanelAfterRow(grid, button, panel);
+        history.replaceState(null, '', `#${itemId}`);
+
+        panel.querySelector<HTMLButtonElement>('.detail-close')?.addEventListener('click', () => closeDetails(true));
+      });
+    });
+  });
+
+  const openFromHash = () => {
+    const hash = decodeURIComponent(location.hash.slice(1));
+    if (!hash) return;
+    const target = document.getElementById(hash);
+    if (target instanceof HTMLButtonElement && target.matches('[data-material-id]')) {
+      target.click();
+    }
+  };
+
+  window.addEventListener('resize', () => {
+    if (!openButton || !openPanel) return;
+    const grid = openButton.closest<HTMLElement>('[data-expandable-grid]');
+    if (!grid) return;
+    const columns = columnsFor(grid);
+    if (columns !== lastColumns) movePanelAfterRow(grid, openButton, openPanel);
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeDetails(true);
+  });
+
+  openFromHash();
+</script>

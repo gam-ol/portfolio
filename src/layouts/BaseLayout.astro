@@ -1,0 +1,67 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import MotionRuntime from '../components/MotionRuntime.astro';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+}
+
+const {
+  title,
+  description,
+  image = '/assets/photo.jpg',
+} = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const socialImage = new URL(image, Astro.site);
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Oleg Gamulinskii',
+  jobTitle: 'Motion Designer',
+  description: 'Motion designer working with animation, broadcast graphics, infographics, and template systems.',
+  url: new URL('/', Astro.site).toString(),
+  sameAs: [
+    'https://www.linkedin.com/in/gam-ol/',
+    'https://www.youtube.com/@Gam_Ol',
+    'https://www.instagram.com/gam_ol/',
+  ],
+  knowsAbout: ['Motion design', 'After Effects', 'Broadcast graphics', 'Infographics', 'Template systems', 'CasparCG', 'MOGRT'],
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="author" content="Oleg Gamulinskii" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href={canonical} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={socialImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImage} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)}></script>
+    <title>{title}</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <Header />
+    <slot />
+    <Footer />
+    <MotionRuntime />
+  </body>
+</html>

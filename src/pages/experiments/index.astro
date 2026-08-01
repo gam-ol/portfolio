@@ -1,0 +1,50 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Experiments — Oleg Gamulinskii"
+  description="Interactive motion and Lottie experiments by Oleg Gamulinskii."
+>
+  <main id="main-content" class="experiments-page">
+    <p class="eyebrow">Motion playground</p>
+    <h1 class="page-title">Experiments</h1>
+    <p class="page-lede">
+      A small space for interaction tests and visual ideas that do not need to behave like finished portfolio pieces.
+    </p>
+
+    <section class="experiment-stage" aria-label="Interactive Lottie experiment">
+      <div class="experiment-lottie" id="interactive-lottie"></div>
+      <p class="experiment-note">Move the pointer to animate.</p>
+    </section>
+  </main>
+
+  <script>
+    import lottie from 'lottie-web/build/player/lottie_light';
+
+    const container = document.querySelector<HTMLElement>('#interactive-lottie');
+    if (container) {
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const animation = lottie.loadAnimation({
+        container,
+        renderer: 'svg',
+        loop: true,
+        autoplay: false,
+        path: '/assets/bg.json',
+      });
+      let pauseTimer: number | undefined;
+
+      const activate = () => {
+        if (reducedMotion || document.hidden) return;
+        animation.play();
+        window.clearTimeout(pauseTimer);
+        pauseTimer = window.setTimeout(() => animation.pause(), 260);
+      };
+
+      document.addEventListener('pointermove', activate, { passive: true });
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) animation.pause();
+      });
+    }
+  </script>
+</BaseLayout>

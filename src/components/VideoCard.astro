@@ -1,0 +1,24 @@
+---
+import type { VideoProject } from '../data/portfolio';
+
+interface Props {
+  item: VideoProject;
+}
+
+const { item } = Astro.props;
+const thumbnail = `https://i.ytimg.com/vi/${item.youtubeId}/hqdefault.jpg`;
+---
+
+<article class="video-card">
+  <button
+    class="video-placeholder"
+    type="button"
+    data-youtube-id={item.youtubeId}
+    data-youtube-title={item.title}
+    aria-label={`Play ${item.title}`}
+  >
+    <img src={thumbnail} alt="" loading="lazy" width="480" height="360" />
+    <span class="play-symbol" aria-hidden="true"></span>
+  </button>
+  <h3>{item.title}</h3>
+</article>

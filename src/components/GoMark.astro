@@ -1,0 +1,16 @@
+---
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+---
+
+<span
+  class:list={['go-mark', className]}
+  data-lottie="hover"
+  data-source="/assets/go.json"
+  data-start="0"
+  data-end="60"
+  aria-hidden="true"
+></span>
