@@ -707,8 +707,8 @@ main {
 }
 
 .cross-field {
-  --cross-cell-size: 112px;
-  --cross-symbol-size: 88px;
+  --cross-cell-size: 44px;
+  --cross-symbol-size: 42px;
   position: relative;
   height: clamp(440px, 54vw, 620px);
   overflow: hidden;
