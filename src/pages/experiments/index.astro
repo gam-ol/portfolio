@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import CrossField from '../../components/CrossField.astro';
 ---
 
 <BaseLayout
@@ -17,6 +18,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
       <div class="experiment-lottie" id="interactive-lottie"></div>
       <p class="experiment-note">Move the pointer to animate.</p>
     </section>
+
+    <CrossField />
   </main>
 
   <script>

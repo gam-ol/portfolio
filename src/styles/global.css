@@ -679,6 +679,72 @@ main {
   font-size: 13px;
 }
 
+.cross-experiment {
+  margin-top: 88px;
+}
+
+.cross-experiment-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 500px);
+  gap: 32px;
+  align-items: end;
+  margin-bottom: 28px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--color-line-strong);
+}
+
+.cross-experiment-title {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.cross-experiment-header > p {
+  margin: 0;
+  color: var(--color-muted);
+  line-height: 1.65;
+}
+
+.cross-field {
+  --cross-cell-size: 112px;
+  --cross-symbol-size: 88px;
+  position: relative;
+  height: clamp(440px, 54vw, 620px);
+  overflow: hidden;
+  border: 1px solid var(--color-line);
+  background: var(--color-surface);
+  isolation: isolate;
+}
+
+.cross-field-grid {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: grid;
+  transform: translate(-50%, -50%);
+}
+
+.cross-field-cell {
+  width: var(--cross-cell-size);
+  height: var(--cross-cell-size);
+  display: grid;
+  place-items: center;
+}
+
+.cross-field-symbol {
+  width: var(--cross-symbol-size);
+  height: var(--cross-symbol-size);
+  overflow: visible;
+  pointer-events: none;
+}
+
+.cross-field .experiment-note {
+  z-index: 1;
+  padding: 4px 7px;
+  background: rgba(255, 255, 255, 0.9);
+}
+
 .not-found {
   width: min(100%, 760px);
   margin: 0 auto;
@@ -816,6 +882,28 @@ main {
 
   .experiment-stage {
     min-height: 58vh;
+  }
+
+  .cross-experiment {
+    margin-top: 64px;
+  }
+
+  .cross-experiment-header {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    align-items: start;
+  }
+
+  .cross-field {
+    --cross-cell-size: 84px;
+    --cross-symbol-size: 64px;
+    height: 480px;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .cross-field .experiment-note {
+    display: none;
   }
 }
 
