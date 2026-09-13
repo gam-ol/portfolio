@@ -1,0 +1,315 @@
+<section class="cross-experiment" aria-labelledby="cross-field-title">
+  <header class="cross-experiment-header">
+    <div>
+      <p class="eyebrow">SVG / pointer interaction</p>
+      <h2 id="cross-field-title" class="cross-experiment-title">Cross Field</h2>
+    </div>
+    <p>
+      Move through the field. Each cross responds once when the pointer enters its radius.
+    </p>
+  </header>
+
+  <div
+    class="cross-field"
+    data-cross-field
+    data-reference-source="/assets/cross.json"
+    role="img"
+    aria-label="A field of animated crosses that react independently to the pointer"
+  >
+    <div class="cross-field-grid" data-cross-field-grid aria-hidden="true"></div>
+    <p class="experiment-note">Move the pointer across the crosses.</p>
+  </div>
+</section>
+
+<script>
+  interface CrossKeyframe {
+    t: number;
+    s: number[];
+    i?: { x?: number[]; y?: number[] };
+    o?: { x?: number[]; y?: number[] };
+  }
+
+  interface CrossReference {
+    fr?: number;
+    ip?: number;
+    op?: number;
+    w?: number;
+    h?: number;
+    layers?: Array<{
+      shapes?: Array<{
+        it?: Array<{
+          ty?: string;
+          pt?: { k?: number };
+          r?: { k?: number };
+          ir?: { k?: CrossKeyframe[] };
+          or?: { k?: number };
+          c?: { k?: number[] };
+        }>;
+      }>;
+    }>;
+  }
+
+  interface RenderSettings {
+    width: number;
+    height: number;
+    duration: number;
+    points: number;
+    rotation: number;
+    outerRadius: number;
+    keyframes: CrossKeyframe[];
+    color: string;
+  }
+
+  interface CrossCell {
+    tile: HTMLDivElement;
+    path: SVGPathElement;
+  }
+
+  const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
+  const referenceSource = '/assets/cross.json';
+  const defaultSettings: RenderSettings = {
+    width: 500,
+    height: 500,
+    duration: 1001,
+    points: 4,
+    rotation: 0,
+    outerRadius: 250,
+    keyframes: [
+      { t: 0, s: [1], o: { x: [0.167], y: [0.167] } },
+      { t: 15, s: [3], i: { x: [0], y: [1] }, o: { x: [1], y: [0] } },
+      { t: 29, s: [1], i: { x: [0.833], y: [0.833] } },
+    ],
+    color: 'rgb(51 51 51)',
+  };
+
+  const numberAt = (value: number[] | undefined, fallback: number) => value?.[0] ?? fallback;
+
+  const loadSettings = async (): Promise<RenderSettings> => {
+    try {
+      const response = await fetch(referenceSource);
+      if (!response.ok) return defaultSettings;
+
+      const data = (await response.json()) as CrossReference;
+      const items = data.layers?.[0]?.shapes?.[0]?.it ?? [];
+      const star = items.find((item) => item.ty === 'sr');
+      const fill = items.find((item) => item.ty === 'fl');
+      const color = fill?.c?.k;
+      const frameRate = data.fr ?? 29.97;
+      const duration = (((data.op ?? 30) - (data.ip ?? 0)) / frameRate) * 1000;
+
+      return {
+        width: data.w ?? defaultSettings.width,
+        height: data.h ?? defaultSettings.height,
+        duration,
+        points: star?.pt?.k ?? defaultSettings.points,
+        rotation: star?.r?.k ?? defaultSettings.rotation,
+        outerRadius: star?.or?.k ?? defaultSettings.outerRadius,
+        keyframes: star?.ir?.k ?? defaultSettings.keyframes,
+        color: color
+          ? `rgb(${color.slice(0, 3).map((channel) => Math.round(channel * 255)).join(' ')})`
+          : defaultSettings.color,
+      };
+    } catch {
+      return defaultSettings;
+    }
+  };
+
+  const cubicBezier = (x1: number, y1: number, x2: number, y2: number, progress: number) => {
+    const sample = (a: number, b: number, t: number) => {
+      const inverse = 1 - t;
+      return 3 * inverse * inverse * t * a + 3 * inverse * t * t * b + t * t * t;
+    };
+
+    let low = 0;
+    let high = 1;
+    let time = progress;
+
+    for (let index = 0; index < 10; index += 1) {
+      time = (low + high) / 2;
+      if (sample(x1, x2, time) < progress) low = time;
+      else high = time;
+    }
+
+    return sample(y1, y2, time);
+  };
+
+  const setupCrossField = async (field: HTMLElement) => {
+    const grid = field.querySelector<HTMLElement>('[data-cross-field-grid]');
+    if (!grid) return;
+
+    const settings = await loadSettings();
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const supportsHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    const cells: CrossCell[] = [];
+    const animations = new Map<HTMLDivElement, { path: SVGPathElement; startedAt: number }>();
+    let frameRequest = 0;
+    let columns = 0;
+    let rows = 0;
+    let cellSize = 100;
+    let symbolSize = 80;
+    let innerRadiusScale = settings.width / symbolSize;
+    let hoveredIndex = -1;
+
+    const starPath = (innerRadius: number) => {
+      const centerX = settings.width / 2;
+      const centerY = settings.height / 2;
+      const startAngle = ((settings.rotation - 90) * Math.PI) / 180;
+      const vertices: string[] = [];
+
+      for (let index = 0; index < settings.points * 2; index += 1) {
+        const radius = index % 2 === 0 ? settings.outerRadius : innerRadius * innerRadiusScale;
+        const angle = startAngle + (index * Math.PI) / settings.points;
+        const x = centerX + Math.cos(angle) * radius;
+        const y = centerY + Math.sin(angle) * radius;
+        vertices.push(`${x.toFixed(3)},${y.toFixed(3)}`);
+      }
+
+      return `M${vertices.join('L')}Z`;
+    };
+
+    const innerRadiusAt = (progress: number) => {
+      const firstFrame = settings.keyframes[0]?.t ?? 0;
+      const lastFrame = settings.keyframes.at(-1)?.t ?? 29;
+      const frame = firstFrame + progress * (lastFrame - firstFrame);
+
+      for (let index = 0; index < settings.keyframes.length - 1; index += 1) {
+        const current = settings.keyframes[index];
+        const next = settings.keyframes[index + 1];
+        if (frame > next.t) continue;
+
+        const segmentProgress = (frame - current.t) / Math.max(1, next.t - current.t);
+        const eased = cubicBezier(
+          numberAt(current.o?.x, 0.33),
+          numberAt(current.o?.y, 0),
+          numberAt(next.i?.x, 0.67),
+          numberAt(next.i?.y, 1),
+          Math.min(1, Math.max(0, segmentProgress)),
+        );
+        const start = numberAt(current.s, 1);
+        const end = numberAt(next.s, start);
+        return start + (end - start) * eased;
+      }
+
+      return numberAt(settings.keyframes.at(-1)?.s, 1);
+    };
+
+    const renderFrame = (timestamp: number) => {
+      animations.forEach((animation, tile) => {
+        const progress = Math.min(1, (timestamp - animation.startedAt) / settings.duration);
+        animation.path.setAttribute('d', starPath(innerRadiusAt(progress)));
+
+        if (progress >= 1) {
+          animation.path.setAttribute('d', starPath(innerRadiusAt(0)));
+          tile.classList.remove('is-playing');
+          animations.delete(tile);
+        }
+      });
+
+      frameRequest = animations.size > 0 ? requestAnimationFrame(renderFrame) : 0;
+    };
+
+    const trigger = (cell: CrossCell) => {
+      if (cell.tile.dataset.armed === 'false') return;
+      cell.tile.dataset.armed = 'false';
+      if (reducedMotion || animations.has(cell.tile)) return;
+
+      cell.tile.classList.add('is-playing');
+      animations.set(cell.tile, { path: cell.path, startedAt: performance.now() });
+      if (!frameRequest) frameRequest = requestAnimationFrame(renderFrame);
+    };
+
+    const setHovered = (nextIndex: number) => {
+      if (nextIndex === hoveredIndex) return;
+      if (hoveredIndex >= 0) cells[hoveredIndex]?.tile.setAttribute('data-armed', 'true');
+      hoveredIndex = nextIndex;
+      if (hoveredIndex >= 0) trigger(cells[hoveredIndex]);
+    };
+
+    const buildGrid = () => {
+      const nextCellSize = Number.parseFloat(getComputedStyle(field).getPropertyValue('--cross-cell-size')) || 100;
+      const nextSymbolSize = Number.parseFloat(getComputedStyle(field).getPropertyValue('--cross-symbol-size')) || 80;
+      const nextColumns = Math.ceil(field.clientWidth / nextCellSize) + 1;
+      const nextRows = Math.ceil(field.clientHeight / nextCellSize) + 1;
+      if (
+        nextColumns === columns
+        && nextRows === rows
+        && nextCellSize === cellSize
+        && nextSymbolSize === symbolSize
+      ) return;
+
+      columns = nextColumns;
+      rows = nextRows;
+      cellSize = nextCellSize;
+      symbolSize = nextSymbolSize;
+      innerRadiusScale = settings.width / symbolSize;
+      hoveredIndex = -1;
+      animations.clear();
+      if (frameRequest) cancelAnimationFrame(frameRequest);
+      frameRequest = 0;
+      cells.length = 0;
+
+      const fragment = document.createDocumentFragment();
+      for (let index = 0; index < columns * rows; index += 1) {
+        const tile = document.createElement('div');
+        const svg = document.createElementNS(SVG_NAMESPACE, 'svg');
+        const path = document.createElementNS(SVG_NAMESPACE, 'path');
+
+        tile.className = 'cross-field-cell';
+        tile.dataset.armed = 'true';
+        svg.classList.add('cross-field-symbol');
+        svg.setAttribute('viewBox', `0 0 ${settings.width} ${settings.height}`);
+        svg.setAttribute('focusable', 'false');
+        path.setAttribute('d', starPath(innerRadiusAt(0)));
+        path.setAttribute('fill', settings.color);
+        svg.append(path);
+        tile.append(svg);
+        fragment.append(tile);
+        cells.push({ tile, path });
+      }
+
+      grid.replaceChildren(fragment);
+      grid.style.gridTemplateColumns = `repeat(${columns}, ${cellSize}px)`;
+      grid.style.gridTemplateRows = `repeat(${rows}, ${cellSize}px)`;
+    };
+
+    field.addEventListener('pointermove', (event) => {
+      if (!supportsHover) return;
+
+      const bounds = field.getBoundingClientRect();
+      const gridWidth = columns * cellSize;
+      const gridHeight = rows * cellSize;
+      const offsetX = (field.clientWidth - gridWidth) / 2;
+      const offsetY = (field.clientHeight - gridHeight) / 2;
+      const localX = event.clientX - bounds.left - offsetX;
+      const localY = event.clientY - bounds.top - offsetY;
+      const column = Math.floor(localX / cellSize);
+      const row = Math.floor(localY / cellSize);
+
+      if (column < 0 || column >= columns || row < 0 || row >= rows) {
+        setHovered(-1);
+        return;
+      }
+
+      const centerX = (column + 0.5) * cellSize;
+      const centerY = (row + 0.5) * cellSize;
+      const distanceSquared = (localX - centerX) ** 2 + (localY - centerY) ** 2;
+      const radius = cellSize * 0.46;
+      setHovered(distanceSquared <= radius ** 2 ? row * columns + column : -1);
+    }, { passive: true });
+
+    field.addEventListener('pointerleave', () => setHovered(-1));
+
+    const resizeObserver = new ResizeObserver(buildGrid);
+    resizeObserver.observe(field);
+    buildGrid();
+
+    window.addEventListener('pagehide', () => {
+      resizeObserver.disconnect();
+      if (frameRequest) cancelAnimationFrame(frameRequest);
+    }, { once: true });
+  };
+
+  document.querySelectorAll<HTMLElement>('[data-cross-field]').forEach((field) => {
+    void setupCrossField(field);
+  });
+</script>
