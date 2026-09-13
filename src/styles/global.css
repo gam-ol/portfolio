@@ -895,8 +895,8 @@ main {
   }
 
   .cross-field {
-    --cross-cell-size: 84px;
-    --cross-symbol-size: 64px;
+    --cross-cell-size: 34px;
+    --cross-symbol-size: 32px;
     height: 480px;
   }
 }
