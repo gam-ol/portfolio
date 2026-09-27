@@ -1,0 +1,385 @@
+<section class="cross-experiment particle-experiment" aria-labelledby="particle-type-title">
+  <header class="cross-experiment-header">
+    <div>
+      <p class="eyebrow">canvas / generative type</p>
+      <h2 id="particle-type-title" class="cross-experiment-title">Particle Typography</h2>
+    </div>
+    <p>
+      Move through the field. Floating symbols gather into a word, then drift back into the system.
+    </p>
+  </header>
+
+  <div
+    class="particle-field"
+    data-particle-field
+    role="img"
+    aria-label="Floating lowercase symbols that gather into words around the pointer"
+  >
+    <canvas data-particle-canvas aria-hidden="true"></canvas>
+    <p class="experiment-note">Move or tap to shape a word.</p>
+  </div>
+</section>
+
+<script>
+  interface Particle {
+    x: number;
+    y: number;
+    homeX: number;
+    homeY: number;
+    vx: number;
+    vy: number;
+    char: string;
+    size: number;
+    alpha: number;
+    phaseX: number;
+    phaseY: number;
+    driftX: number;
+    driftY: number;
+    speedX: number;
+    speedY: number;
+    targetOffsetX: number | null;
+    targetOffsetY: number | null;
+  }
+
+  interface TargetPoint {
+    x: number;
+    y: number;
+  }
+
+  const words = [
+    'hello',
+    'there',
+    'gam_ol',
+    'motion',
+    'designer',
+    'oh',
+    'you',
+    'hi',
+    'motion',
+    'broadcast',
+    'realtime',
+    'template',
+    'system',
+    'automation',
+    'interactive',
+    'code',
+    'lottie',
+    'canvas',
+    'typography',
+    'data',
+    'visual',
+    'workflow',
+    'modular',
+    'dynamic',
+    'oleg',
+  ] as const;
+
+  const characterPool = 'abcdefghijklmnopqrstuvwxyz0123456789_+-*/{}[]<>.:;?@#$%&';
+  const clamp = (value: number, minimum: number, maximum: number) => Math.min(maximum, Math.max(minimum, value));
+
+  const setupParticleField = async (field: HTMLElement) => {
+    const canvas = field.querySelector<HTMLCanvasElement>('[data-particle-canvas]');
+    const context = canvas?.getContext('2d');
+    if (!canvas || !context) return;
+
+    await document.fonts.ready;
+
+    const maskCanvas = document.createElement('canvas');
+    const maskContext = maskCanvas.getContext('2d', { willReadFrequently: true });
+    if (!maskContext) return;
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const particles: Particle[] = [];
+    const pointer = { x: 0, y: 0, active: false };
+    let width = 0;
+    let height = 0;
+    let frameRequest = 0;
+    let resizeRequest = 0;
+    let visible = false;
+    let wordIndex = -1;
+    let lastWordX = 0;
+    let lastWordY = 0;
+    let lastWordAt = 0;
+    let wordCenterX = 0;
+    let wordCenterY = 0;
+    let wordMinX = 0;
+    let wordMaxX = 0;
+    let wordMinY = 0;
+    let wordMaxY = 0;
+    let touchTimer = 0;
+
+    const randomCharacter = () => characterPool[Math.floor(Math.random() * characterPool.length)];
+
+    const createParticles = () => {
+      const amount = clamp(Math.round((width * height) / 1150), 400, 600);
+      particles.length = 0;
+
+      for (let index = 0; index < amount; index += 1) {
+        const x = Math.random() * width;
+        const y = Math.random() * height;
+        particles.push({
+          x,
+          y,
+          homeX: x,
+          homeY: y,
+          vx: 0,
+          vy: 0,
+          char: randomCharacter(),
+          size: 7 + Math.random() * 3,
+          alpha: 0.18 + Math.random() * 0.36,
+          phaseX: Math.random() * Math.PI * 2,
+          phaseY: Math.random() * Math.PI * 2,
+          driftX: 5 + Math.random() * 15,
+          driftY: 5 + Math.random() * 15,
+          speedX: 0.00006 + Math.random() * 0.00008,
+          speedY: 0.00006 + Math.random() * 0.00008,
+          targetOffsetX: null,
+          targetOffsetY: null,
+        });
+      }
+    };
+
+    const clearWord = () => {
+      pointer.active = false;
+      delete field.dataset.activeWord;
+      particles.forEach((particle) => {
+        particle.targetOffsetX = null;
+        particle.targetOffsetY = null;
+      });
+    };
+
+    const getTargetPoints = (word: string) => {
+      maskCanvas.width = Math.max(1, Math.round(width));
+      maskCanvas.height = Math.max(1, Math.round(height));
+      maskContext.clearRect(0, 0, width, height);
+
+      const fontSize = clamp(
+        Math.min(height * 0.22, (width * 0.76) / (Math.max(2, word.length) * 0.56)),
+        34,
+        118,
+      );
+      maskContext.fillStyle = '#000000';
+      maskContext.font = `700 ${fontSize}px Lato, sans-serif`;
+      maskContext.textAlign = 'center';
+      maskContext.textBaseline = 'middle';
+      maskContext.fillText(word, width / 2, height / 2);
+
+      const image = maskContext.getImageData(0, 0, maskCanvas.width, maskCanvas.height);
+      const spacing = width < 600 ? 5 : 8;
+      const points: TargetPoint[] = [];
+
+      for (let y = 0; y < maskCanvas.height; y += spacing) {
+        for (let x = 0; x < maskCanvas.width; x += spacing) {
+          const alpha = image.data[(y * maskCanvas.width + x) * 4 + 3];
+          if (alpha > 150) points.push({ x: x - width / 2, y: y - height / 2 });
+        }
+      }
+
+      for (let index = points.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [points[index], points[swapIndex]] = [points[swapIndex], points[index]];
+      }
+
+      return points.slice(0, Math.floor(particles.length * 0.58));
+    };
+
+    const updateWordBounds = (points: TargetPoint[]) => {
+      wordMinX = Math.min(...points.map((point) => point.x));
+      wordMaxX = Math.max(...points.map((point) => point.x));
+      wordMinY = Math.min(...points.map((point) => point.y));
+      wordMaxY = Math.max(...points.map((point) => point.y));
+    };
+
+    const clampWordCenter = (x: number, y: number) => {
+      const padding = 28;
+      return {
+        x: clamp(x, padding - wordMinX, width - padding - wordMaxX),
+        y: clamp(y, padding - wordMinY, height - padding - wordMaxY),
+      };
+    };
+
+    const assignWord = (word: string) => {
+      const points = getTargetPoints(word);
+      if (points.length === 0) return;
+
+      updateWordBounds(points);
+      const center = clampWordCenter(pointer.x, pointer.y);
+      wordCenterX = center.x;
+      wordCenterY = center.y;
+      const available = particles.slice();
+
+      particles.forEach((particle) => {
+        particle.targetOffsetX = null;
+        particle.targetOffsetY = null;
+      });
+
+      points.forEach((point) => {
+        const targetX = center.x + point.x;
+        const targetY = center.y + point.y;
+        let closestIndex = 0;
+        let closestDistance = Number.POSITIVE_INFINITY;
+
+        for (let index = 0; index < available.length; index += 1) {
+          const particle = available[index];
+          const distance = (particle.x - targetX) ** 2 + (particle.y - targetY) ** 2;
+          if (distance < closestDistance) {
+            closestDistance = distance;
+            closestIndex = index;
+          }
+        }
+
+        const [particle] = available.splice(closestIndex, 1);
+        particle.targetOffsetX = point.x;
+        particle.targetOffsetY = point.y;
+      });
+
+      field.dataset.activeWord = word;
+    };
+
+    const showNextWord = (x: number, y: number, timestamp: number) => {
+      pointer.x = x;
+      pointer.y = y;
+      pointer.active = true;
+      wordIndex = (wordIndex + 1) % words.length;
+      lastWordX = x;
+      lastWordY = y;
+      lastWordAt = timestamp;
+      assignWord(words[wordIndex]);
+    };
+
+    const draw = (timestamp: number) => {
+      context.clearRect(0, 0, width, height);
+      context.textAlign = 'center';
+      context.textBaseline = 'middle';
+
+      if (pointer.active) {
+        const nextCenter = clampWordCenter(pointer.x, pointer.y);
+        wordCenterX += (nextCenter.x - wordCenterX) * 0.075;
+        wordCenterY += (nextCenter.y - wordCenterY) * 0.075;
+      }
+
+      particles.forEach((particle) => {
+        const isWordParticle = particle.targetOffsetX !== null && particle.targetOffsetY !== null;
+        let targetX: number;
+        let targetY: number;
+
+        if (isWordParticle && pointer.active) {
+          targetX = wordCenterX + particle.targetOffsetX!;
+          targetY = wordCenterY + particle.targetOffsetY!;
+          particle.vx += (targetX - particle.x) * 0.024;
+          particle.vy += (targetY - particle.y) * 0.024;
+          particle.vx *= 0.86;
+          particle.vy *= 0.86;
+        } else {
+          targetX = particle.homeX + Math.sin(timestamp * particle.speedX + particle.phaseX) * particle.driftX;
+          targetY = particle.homeY + Math.cos(timestamp * particle.speedY + particle.phaseY) * particle.driftY;
+          particle.vx += (targetX - particle.x) * 0.0014;
+          particle.vy += (targetY - particle.y) * 0.0014;
+          particle.vx *= 0.955;
+          particle.vy *= 0.955;
+        }
+
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+
+        const alpha = isWordParticle && pointer.active ? 0.94 : particle.alpha;
+        const size = isWordParticle && pointer.active ? Math.min(8.5, particle.size) : particle.size;
+        context.fillStyle = `rgba(17, 17, 17, ${alpha})`;
+        context.font = `400 ${size}px Lato, sans-serif`;
+        context.fillText(particle.char, particle.x, particle.y);
+      });
+
+      frameRequest = visible && !reducedMotion ? requestAnimationFrame(draw) : 0;
+    };
+
+    const renderStill = () => draw(performance.now());
+
+    const resize = () => {
+      resizeRequest = 0;
+      const nextWidth = field.clientWidth;
+      const nextHeight = field.clientHeight;
+      if (nextWidth < 1 || nextHeight < 1 || (nextWidth === width && nextHeight === height)) return;
+
+      if (frameRequest) {
+        cancelAnimationFrame(frameRequest);
+        frameRequest = 0;
+      }
+      width = nextWidth;
+      height = nextHeight;
+      const pixelRatio = Math.min(2, window.devicePixelRatio || 1);
+      canvas.width = Math.round(width * pixelRatio);
+      canvas.height = Math.round(height * pixelRatio);
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+      pointer.x = width / 2;
+      pointer.y = height / 2;
+      clearWord();
+      createParticles();
+      renderStill();
+    };
+
+    field.addEventListener('pointermove', (event) => {
+      if (event.pointerType === 'touch' || reducedMotion) return;
+      const bounds = field.getBoundingClientRect();
+      const x = event.clientX - bounds.left;
+      const y = event.clientY - bounds.top;
+      const timestamp = performance.now();
+      pointer.x = x;
+      pointer.y = y;
+
+      if (!pointer.active) {
+        showNextWord(x, y, timestamp);
+        return;
+      }
+
+      const changeDistance = clamp(width * 0.17, 120, 180);
+      const distance = Math.hypot(x - lastWordX, y - lastWordY);
+      if (distance >= changeDistance && timestamp - lastWordAt >= 700) {
+        showNextWord(x, y, timestamp);
+      }
+    }, { passive: true });
+
+    field.addEventListener('pointerleave', (event) => {
+      if (event.pointerType !== 'touch') clearWord();
+    });
+
+    field.addEventListener('pointerdown', (event) => {
+      if (event.pointerType !== 'touch' || reducedMotion) return;
+      const bounds = field.getBoundingClientRect();
+      showNextWord(event.clientX - bounds.left, event.clientY - bounds.top, performance.now());
+      window.clearTimeout(touchTimer);
+      touchTimer = window.setTimeout(clearWord, 2200);
+    }, { passive: true });
+
+    const resizeObserver = new ResizeObserver(() => {
+      cancelAnimationFrame(resizeRequest);
+      resizeRequest = requestAnimationFrame(resize);
+    });
+    resizeObserver.observe(field);
+
+    const intersectionObserver = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      if (visible && !reducedMotion && !frameRequest) frameRequest = requestAnimationFrame(draw);
+      if (!visible && frameRequest) {
+        cancelAnimationFrame(frameRequest);
+        frameRequest = 0;
+      }
+    }, { rootMargin: '120px' });
+    intersectionObserver.observe(field);
+
+    resize();
+
+    window.addEventListener('pagehide', () => {
+      resizeObserver.disconnect();
+      intersectionObserver.disconnect();
+      cancelAnimationFrame(frameRequest);
+      cancelAnimationFrame(resizeRequest);
+      window.clearTimeout(touchTimer);
+    }, { once: true });
+  };
+
+  document.querySelectorAll<HTMLElement>('[data-particle-field]').forEach((field) => {
+    void setupParticleField(field);
+  });
+</script>
