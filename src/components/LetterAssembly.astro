@@ -49,6 +49,11 @@
     targetOffsetX: number | null;
     targetOffsetY: number | null;
     targetSize: number | null;
+    letterCenterX: number;
+    letterCenterY: number;
+    followRate: number;
+    scatterX: number;
+    scatterY: number;
   }
 
   interface LetterTarget {
@@ -86,6 +91,11 @@
   ] as const;
 
   const characterPool = 'abcdefghijklmnopqrstuvwxyz_';
+  const wordCoreRadius = 20;
+  const wordReleaseRadius = 50;
+  const wordFollowRate = 0.04;
+  const wordFollowVariance = 0.01;
+  const touchWordLifetime = 2000;
   const clamp = (value: number, minimum: number, maximum: number) => Math.min(maximum, Math.max(minimum, value));
 
   const setupLetterField = async (field: HTMLElement) => {
@@ -104,11 +114,13 @@
     let resizeRequest = 0;
     let visible = false;
     let wordIndex = -1;
-    let lastWordX = 0;
-    let lastWordY = 0;
-    let lastWordAt = 0;
-    let wordCenterX = 0;
-    let wordCenterY = 0;
+    let wordOriginX = 0;
+    let wordOriginY = 0;
+    let wordLetterCount = 0;
+    let wordIsFormed = false;
+    let releasePending = false;
+    let pointerInside = false;
+    let isTouchWord = false;
     let wordMinX = 0;
     let wordMaxX = 0;
     let wordMinY = 0;
@@ -156,6 +168,11 @@
           targetOffsetX: null,
           targetOffsetY: null,
           targetSize: null,
+          letterCenterX: x,
+          letterCenterY: y,
+          followRate: 0.04,
+          scatterX: 0,
+          scatterY: 0,
         });
       });
     };
@@ -180,8 +197,13 @@
 
     const clearWord = (timestamp = performance.now()) => {
       pointer.active = false;
+      wordIsFormed = false;
+      releasePending = false;
+      wordLetterCount = 0;
+      isTouchWord = false;
       delete field.dataset.activeWord;
       delete field.dataset.assembledLetters;
+      delete field.dataset.wordFormed;
       releaseAssembledLetters(timestamp);
     };
 
@@ -224,8 +246,6 @@
       releaseAssembledLetters(timestamp);
       const { targets, fontSize } = getLetterTargets(word);
       const center = clampWordCenter(pointer.x, pointer.y);
-      wordCenterX = center.x;
-      wordCenterY = center.y;
       const available = particles.filter((particle) => particle.lifecycle === 'ambient');
       let assignedLetters = 0;
 
@@ -250,10 +270,18 @@
         particle.targetOffsetX = target.x;
         particle.targetOffsetY = target.y;
         particle.targetSize = fontSize;
+        particle.letterCenterX = center.x;
+        particle.letterCenterY = center.y;
+        particle.followRate = wordFollowRate + (Math.random() * 2 - 1) * wordFollowVariance;
+        const scatterAngle = Math.random() * Math.PI * 2;
+        const scatterDistance = 10 + Math.random() * 18;
+        particle.scatterX = Math.cos(scatterAngle) * scatterDistance;
+        particle.scatterY = Math.sin(scatterAngle) * scatterDistance;
         particle.lifecycle = 'assembled';
         assignedLetters += 1;
       });
 
+      wordLetterCount = assignedLetters;
       field.dataset.activeWord = word;
       field.dataset.assembledLetters = String(assignedLetters);
     };
@@ -263,10 +291,19 @@
       pointer.y = y;
       pointer.active = true;
       wordIndex = (wordIndex + 1) % words.length;
-      lastWordX = x;
-      lastWordY = y;
-      lastWordAt = timestamp;
+      wordOriginX = x;
+      wordOriginY = y;
+      wordIsFormed = false;
+      releasePending = false;
+      delete field.dataset.wordFormed;
       assignWord(words[wordIndex], timestamp);
+    };
+
+    const replaceWord = (timestamp: number) => {
+      const nextX = pointer.x;
+      const nextY = pointer.y;
+      clearWord(timestamp);
+      if (pointerInside) showNextWord(nextX, nextY, timestamp);
     };
 
     const respawnParticle = (particle: LetterParticle, timestamp: number) => {
@@ -292,23 +329,34 @@
       context.textAlign = 'center';
       context.textBaseline = 'middle';
 
-      if (pointer.active) {
-        const nextCenter = clampWordCenter(pointer.x, pointer.y);
-        wordCenterX += (nextCenter.x - wordCenterX) * 0.04;
-        wordCenterY += (nextCenter.y - wordCenterY) * 0.04;
-      }
+      const pointerDistance = Math.hypot(pointer.x - wordOriginX, pointer.y - wordOriginY);
+      const rawScatter = clamp(
+        (pointerDistance - wordCoreRadius) / (wordReleaseRadius - wordCoreRadius),
+        0,
+        1,
+      );
+      const scatterAmount = wordIsFormed ? rawScatter * rawScatter * (3 - 2 * rawScatter) : 0;
+      const centerTarget = clampWordCenter(
+        releasePending ? wordOriginX : pointer.x,
+        releasePending ? wordOriginY : pointer.y,
+      );
+      let activeLetterCount = 0;
+      let maxTargetDistance = 0;
+      let maxSizeDifference = 0;
 
       particles.forEach((particle) => {
         const isLetter = particle.lifecycle === 'assembled'
           && particle.targetOffsetX !== null
           && particle.targetOffsetY !== null
           && particle.targetSize !== null;
-        let targetX: number;
-        let targetY: number;
+        let targetX = particle.x;
+        let targetY = particle.y;
 
         if (isLetter && pointer.active) {
-          targetX = wordCenterX + particle.targetOffsetX!;
-          targetY = wordCenterY + particle.targetOffsetY!;
+          particle.letterCenterX += (centerTarget.x - particle.letterCenterX) * particle.followRate;
+          particle.letterCenterY += (centerTarget.y - particle.letterCenterY) * particle.followRate;
+          targetX = particle.letterCenterX + particle.targetOffsetX! + particle.scatterX * scatterAmount;
+          targetY = particle.letterCenterY + particle.targetOffsetY! + particle.scatterY * scatterAmount;
           particle.vx += (targetX - particle.x) * 0.0045;
           particle.vy += (targetY - particle.y) * 0.0045;
           particle.vx *= 0.93;
@@ -350,12 +398,30 @@
         particle.x += particle.vx;
         particle.y += particle.vy;
 
+        if (isLetter && pointer.active) {
+          activeLetterCount += 1;
+          maxTargetDistance = Math.max(maxTargetDistance, Math.hypot(targetX - particle.x, targetY - particle.y));
+          maxSizeDifference = Math.max(maxSizeDifference, Math.abs(particle.targetSize! - particle.renderSize));
+        }
+
         const assembled = isLetter && pointer.active;
         const emphasized = assembled || particle.lifecycle === 'releasing';
         context.fillStyle = `rgba(17, 17, 17, ${particle.renderAlpha})`;
         context.font = `${emphasized ? 700 : 400} ${particle.renderSize}px Lato, sans-serif`;
         context.fillText(particle.char, particle.x, particle.y);
       });
+
+      if (
+        pointer.active
+        && !wordIsFormed
+        && activeLetterCount === wordLetterCount
+        && maxTargetDistance < 2.5
+        && maxSizeDifference < 0.8
+      ) {
+        wordIsFormed = true;
+        field.dataset.wordFormed = 'true';
+        if (releasePending && !isTouchWord) replaceWord(timestamp);
+      }
 
       frameRequest = visible && !reducedMotion ? requestAnimationFrame(draw) : 0;
     };
@@ -382,6 +448,7 @@
       context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
       pointer.x = width / 2;
       pointer.y = height / 2;
+      pointerInside = false;
       clearWord();
       createParticles();
       renderStill();
@@ -393,6 +460,8 @@
       const x = event.clientX - bounds.left;
       const y = event.clientY - bounds.top;
       const timestamp = performance.now();
+      pointerInside = true;
+      isTouchWord = false;
       pointer.x = x;
       pointer.y = y;
 
@@ -401,23 +470,30 @@
         return;
       }
 
-      const changeDistance = clamp(width * 0.17, 120, 180);
-      const distance = Math.hypot(x - lastWordX, y - lastWordY);
-      if (distance >= changeDistance && timestamp - lastWordAt >= 2200) {
-        showNextWord(x, y, timestamp);
+      const distance = Math.hypot(x - wordOriginX, y - wordOriginY);
+      if (distance >= wordReleaseRadius) {
+        if (wordIsFormed) replaceWord(timestamp);
+        else releasePending = true;
       }
     }, { passive: true });
 
     field.addEventListener('pointerleave', (event) => {
-      if (event.pointerType !== 'touch') clearWord(performance.now());
+      if (event.pointerType === 'touch') return;
+      pointerInside = false;
+      if (!pointer.active) return;
+      if (wordIsFormed) clearWord(performance.now());
+      else releasePending = true;
     });
 
     field.addEventListener('pointerdown', (event) => {
       if (event.pointerType !== 'touch' || reducedMotion) return;
       const bounds = field.getBoundingClientRect();
+      isTouchWord = true;
+      pointerInside = false;
       showNextWord(event.clientX - bounds.left, event.clientY - bounds.top, performance.now());
+      isTouchWord = true;
       window.clearTimeout(touchTimer);
-      touchTimer = window.setTimeout(() => clearWord(performance.now()), 4600);
+      touchTimer = window.setTimeout(() => clearWord(performance.now()), touchWordLifetime);
     }, { passive: true });
 
     const resizeObserver = new ResizeObserver(() => {
