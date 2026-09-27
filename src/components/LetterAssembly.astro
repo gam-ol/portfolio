@@ -1,0 +1,383 @@
+<section class="cross-experiment letter-experiment" aria-labelledby="letter-assembly-title">
+  <header class="cross-experiment-header">
+    <div>
+      <p class="eyebrow">canvas / character assembly</p>
+      <h2 id="letter-assembly-title" class="cross-experiment-title">Letter Assembly</h2>
+    </div>
+    <p>
+      One drifting character becomes one letter. Together they assemble a word around the pointer.
+    </p>
+  </header>
+
+  <div
+    class="letter-field"
+    data-letter-field
+    role="img"
+    aria-label="Lowercase letters that drift through space and assemble into words around the pointer"
+  >
+    <canvas data-letter-canvas aria-hidden="true"></canvas>
+    <p class="experiment-note">Move or tap to assemble a word.</p>
+  </div>
+</section>
+
+<script>
+  interface LetterParticle {
+    x: number;
+    y: number;
+    homeX: number;
+    homeY: number;
+    vx: number;
+    vy: number;
+    char: string;
+    size: number;
+    renderSize: number;
+    alpha: number;
+    phaseX: number;
+    phaseY: number;
+    driftX: number;
+    driftY: number;
+    speedX: number;
+    speedY: number;
+    targetOffsetX: number | null;
+    targetOffsetY: number | null;
+    targetSize: number | null;
+  }
+
+  interface LetterTarget {
+    char: string;
+    x: number;
+    y: number;
+  }
+
+  const words = [
+    'hello',
+    'there',
+    'gam_ol',
+    'motion',
+    'designer',
+    'oh',
+    'you',
+    'hi',
+    'motion',
+    'broadcast',
+    'realtime',
+    'template',
+    'system',
+    'automation',
+    'interactive',
+    'code',
+    'lottie',
+    'canvas',
+    'typography',
+    'data',
+    'visual',
+    'workflow',
+    'modular',
+    'dynamic',
+    'oleg',
+  ] as const;
+
+  const characterPool = 'abcdefghijklmnopqrstuvwxyz_';
+  const clamp = (value: number, minimum: number, maximum: number) => Math.min(maximum, Math.max(minimum, value));
+
+  const setupLetterField = async (field: HTMLElement) => {
+    const canvas = field.querySelector<HTMLCanvasElement>('[data-letter-canvas]');
+    const context = canvas?.getContext('2d');
+    if (!canvas || !context) return;
+
+    await document.fonts.ready;
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const particles: LetterParticle[] = [];
+    const pointer = { x: 0, y: 0, active: false };
+    let width = 0;
+    let height = 0;
+    let frameRequest = 0;
+    let resizeRequest = 0;
+    let visible = false;
+    let wordIndex = -1;
+    let lastWordX = 0;
+    let lastWordY = 0;
+    let lastWordAt = 0;
+    let wordCenterX = 0;
+    let wordCenterY = 0;
+    let wordMinX = 0;
+    let wordMaxX = 0;
+    let wordMinY = 0;
+    let wordMaxY = 0;
+    let touchTimer = 0;
+
+    const createParticles = () => {
+      const amount = clamp(Math.round((width * height) / 1150), 400, 600);
+      const characters = Array.from({ length: amount }, (_, index) => characterPool[index % characterPool.length]);
+
+      for (let index = characters.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [characters[index], characters[swapIndex]] = [characters[swapIndex], characters[index]];
+      }
+
+      particles.length = 0;
+      characters.forEach((char) => {
+        const x = Math.random() * width;
+        const y = Math.random() * height;
+        const size = 7 + Math.random() * 3;
+        particles.push({
+          x,
+          y,
+          homeX: x,
+          homeY: y,
+          vx: 0,
+          vy: 0,
+          char,
+          size,
+          renderSize: size,
+          alpha: 0.18 + Math.random() * 0.36,
+          phaseX: Math.random() * Math.PI * 2,
+          phaseY: Math.random() * Math.PI * 2,
+          driftX: 5 + Math.random() * 15,
+          driftY: 5 + Math.random() * 15,
+          speedX: 0.00006 + Math.random() * 0.00008,
+          speedY: 0.00006 + Math.random() * 0.00008,
+          targetOffsetX: null,
+          targetOffsetY: null,
+          targetSize: null,
+        });
+      });
+    };
+
+    const clearWord = () => {
+      pointer.active = false;
+      delete field.dataset.activeWord;
+      delete field.dataset.assembledLetters;
+      particles.forEach((particle) => {
+        particle.targetOffsetX = null;
+        particle.targetOffsetY = null;
+        particle.targetSize = null;
+      });
+    };
+
+    const getLetterTargets = (word: string) => {
+      const fontSize = clamp(
+        Math.min(height * 0.17, (width * 0.7) / (Math.max(2, word.length) * 0.55)),
+        38,
+        82,
+      );
+      const tracking = fontSize * 0.025;
+      context.font = `700 ${fontSize}px Lato, sans-serif`;
+      const characters = Array.from(word);
+      const widths = characters.map((char) => context.measureText(char).width);
+      const totalWidth = widths.reduce((sum, letterWidth) => sum + letterWidth, 0) + tracking * (characters.length - 1);
+      const targets: LetterTarget[] = [];
+      let cursor = -totalWidth / 2;
+
+      characters.forEach((char, index) => {
+        const letterWidth = widths[index];
+        targets.push({ char, x: cursor + letterWidth / 2, y: 0 });
+        cursor += letterWidth + tracking;
+      });
+
+      wordMinX = -totalWidth / 2;
+      wordMaxX = totalWidth / 2;
+      wordMinY = -fontSize * 0.58;
+      wordMaxY = fontSize * 0.58;
+      return { targets, fontSize };
+    };
+
+    const clampWordCenter = (x: number, y: number) => {
+      const padding = 32;
+      return {
+        x: clamp(x, padding - wordMinX, width - padding - wordMaxX),
+        y: clamp(y, padding - wordMinY, height - padding - wordMaxY),
+      };
+    };
+
+    const assignWord = (word: string) => {
+      const { targets, fontSize } = getLetterTargets(word);
+      const center = clampWordCenter(pointer.x, pointer.y);
+      wordCenterX = center.x;
+      wordCenterY = center.y;
+      const available = particles.slice();
+      let assignedLetters = 0;
+
+      particles.forEach((particle) => {
+        particle.targetOffsetX = null;
+        particle.targetOffsetY = null;
+        particle.targetSize = null;
+      });
+
+      targets.forEach((target) => {
+        const targetX = center.x + target.x;
+        const targetY = center.y + target.y;
+        let closestIndex = -1;
+        let closestDistance = Number.POSITIVE_INFINITY;
+
+        for (let index = 0; index < available.length; index += 1) {
+          const particle = available[index];
+          if (particle.char !== target.char) continue;
+          const distance = (particle.x - targetX) ** 2 + (particle.y - targetY) ** 2;
+          if (distance < closestDistance) {
+            closestDistance = distance;
+            closestIndex = index;
+          }
+        }
+
+        if (closestIndex < 0) return;
+        const [particle] = available.splice(closestIndex, 1);
+        particle.targetOffsetX = target.x;
+        particle.targetOffsetY = target.y;
+        particle.targetSize = fontSize;
+        assignedLetters += 1;
+      });
+
+      field.dataset.activeWord = word;
+      field.dataset.assembledLetters = String(assignedLetters);
+    };
+
+    const showNextWord = (x: number, y: number, timestamp: number) => {
+      pointer.x = x;
+      pointer.y = y;
+      pointer.active = true;
+      wordIndex = (wordIndex + 1) % words.length;
+      lastWordX = x;
+      lastWordY = y;
+      lastWordAt = timestamp;
+      assignWord(words[wordIndex]);
+    };
+
+    const draw = (timestamp: number) => {
+      context.clearRect(0, 0, width, height);
+      context.textAlign = 'center';
+      context.textBaseline = 'middle';
+
+      if (pointer.active) {
+        const nextCenter = clampWordCenter(pointer.x, pointer.y);
+        wordCenterX += (nextCenter.x - wordCenterX) * 0.04;
+        wordCenterY += (nextCenter.y - wordCenterY) * 0.04;
+      }
+
+      particles.forEach((particle) => {
+        const isLetter = particle.targetOffsetX !== null && particle.targetOffsetY !== null && particle.targetSize !== null;
+        let targetX: number;
+        let targetY: number;
+
+        if (isLetter && pointer.active) {
+          targetX = wordCenterX + particle.targetOffsetX!;
+          targetY = wordCenterY + particle.targetOffsetY!;
+          particle.vx += (targetX - particle.x) * 0.0045;
+          particle.vy += (targetY - particle.y) * 0.0045;
+          particle.vx *= 0.93;
+          particle.vy *= 0.93;
+          particle.renderSize += (particle.targetSize! - particle.renderSize) * 0.018;
+        } else {
+          targetX = particle.homeX + Math.sin(timestamp * particle.speedX + particle.phaseX) * particle.driftX;
+          targetY = particle.homeY + Math.cos(timestamp * particle.speedY + particle.phaseY) * particle.driftY;
+          particle.vx += (targetX - particle.x) * 0.0014;
+          particle.vy += (targetY - particle.y) * 0.0014;
+          particle.vx *= 0.955;
+          particle.vy *= 0.955;
+          particle.renderSize += (particle.size - particle.renderSize) * 0.018;
+        }
+
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+
+        const assembled = isLetter && pointer.active;
+        context.fillStyle = `rgba(17, 17, 17, ${assembled ? 0.96 : particle.alpha})`;
+        context.font = `${assembled ? 700 : 400} ${particle.renderSize}px Lato, sans-serif`;
+        context.fillText(particle.char, particle.x, particle.y);
+      });
+
+      frameRequest = visible && !reducedMotion ? requestAnimationFrame(draw) : 0;
+    };
+
+    const renderStill = () => draw(performance.now());
+
+    const resize = () => {
+      resizeRequest = 0;
+      const nextWidth = field.clientWidth;
+      const nextHeight = field.clientHeight;
+      if (nextWidth < 1 || nextHeight < 1 || (nextWidth === width && nextHeight === height)) return;
+
+      if (frameRequest) {
+        cancelAnimationFrame(frameRequest);
+        frameRequest = 0;
+      }
+      width = nextWidth;
+      height = nextHeight;
+      const pixelRatio = Math.min(2, window.devicePixelRatio || 1);
+      canvas.width = Math.round(width * pixelRatio);
+      canvas.height = Math.round(height * pixelRatio);
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+      pointer.x = width / 2;
+      pointer.y = height / 2;
+      clearWord();
+      createParticles();
+      renderStill();
+    };
+
+    field.addEventListener('pointermove', (event) => {
+      if (event.pointerType === 'touch' || reducedMotion) return;
+      const bounds = field.getBoundingClientRect();
+      const x = event.clientX - bounds.left;
+      const y = event.clientY - bounds.top;
+      const timestamp = performance.now();
+      pointer.x = x;
+      pointer.y = y;
+
+      if (!pointer.active) {
+        showNextWord(x, y, timestamp);
+        return;
+      }
+
+      const changeDistance = clamp(width * 0.17, 120, 180);
+      const distance = Math.hypot(x - lastWordX, y - lastWordY);
+      if (distance >= changeDistance && timestamp - lastWordAt >= 2200) {
+        showNextWord(x, y, timestamp);
+      }
+    }, { passive: true });
+
+    field.addEventListener('pointerleave', (event) => {
+      if (event.pointerType !== 'touch') clearWord();
+    });
+
+    field.addEventListener('pointerdown', (event) => {
+      if (event.pointerType !== 'touch' || reducedMotion) return;
+      const bounds = field.getBoundingClientRect();
+      showNextWord(event.clientX - bounds.left, event.clientY - bounds.top, performance.now());
+      window.clearTimeout(touchTimer);
+      touchTimer = window.setTimeout(clearWord, 4600);
+    }, { passive: true });
+
+    const resizeObserver = new ResizeObserver(() => {
+      cancelAnimationFrame(resizeRequest);
+      resizeRequest = requestAnimationFrame(resize);
+    });
+    resizeObserver.observe(field);
+
+    const intersectionObserver = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      if (visible && !reducedMotion && !frameRequest) frameRequest = requestAnimationFrame(draw);
+      if (!visible && frameRequest) {
+        cancelAnimationFrame(frameRequest);
+        frameRequest = 0;
+      }
+    }, { rootMargin: '120px' });
+    intersectionObserver.observe(field);
+
+    resize();
+
+    window.addEventListener('pagehide', () => {
+      resizeObserver.disconnect();
+      intersectionObserver.disconnect();
+      cancelAnimationFrame(frameRequest);
+      cancelAnimationFrame(resizeRequest);
+      window.clearTimeout(touchTimer);
+    }, { once: true });
+  };
+
+  document.querySelectorAll<HTMLElement>('[data-letter-field]').forEach((field) => {
+    void setupLetterField(field);
+  });
+</script>
